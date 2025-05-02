@@ -12,7 +12,7 @@
         <header class="border-b border-gray-200 dark:border-gray-800">
             <div class="max-w-4xl mx-auto px-4 py-6">
                 <h1 class="text-2xl font-bold">
-                    <a href="{{ route('home') }}">My Personal Blog</a>
+                    <a href="{{ route('posts.index') }}">My Personal Blog</a>
                 </h1>
             </div>
         </header>
