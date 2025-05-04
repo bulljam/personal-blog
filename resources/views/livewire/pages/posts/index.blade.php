@@ -3,11 +3,11 @@
 use function Livewire\Volt\computed;
 use function Livewire\Volt\layout;
 
-layout('components.layouts.blog');
-
 $posts = computed(fn () => \App\Models\Post::whereNotNull('published_at')
     ->orderByDesc('published_at')
     ->get());
+
+layout('components.layouts.blog');
 ?>
 
 <div class="space-y-8">
@@ -17,7 +17,7 @@ $posts = computed(fn () => \App\Models\Post::whereNotNull('published_at')
     @foreach ($this->posts as $post)
         <article class="border-b border-gray-200 dark:border-gray-800 pb-6">
             <h3 class="text-2xl font-semibold mb-2">
-                <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400">
+                <a href="{{ route('posts.show', $post->slug) }}" class="hover:text-blue-600 dark:hover:text-blue-400">
                     {{ $post->title }}
                 </a>
             </h3>

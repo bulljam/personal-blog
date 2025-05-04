@@ -8,3 +8,4 @@ Route::get('/', function () {
 })->name('home');
 
 Volt::route('/posts', 'pages.posts.index')->name('posts.index');
+Volt::route('/posts/{post:slug}', 'pages.posts.show')->name('posts.show');
