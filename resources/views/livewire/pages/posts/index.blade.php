@@ -3,7 +3,7 @@
 use function Livewire\Volt\computed;
 use function Livewire\Volt\layout;
 
-$posts = computed(fn () => \App\Models\Post::whereNotNull('published_at')
+$posts = computed(fn() => \App\Models\Post::whereNotNull('published_at')
     ->orderByDesc('published_at')
     ->get());
 
@@ -12,6 +12,7 @@ layout('components.layouts.blog');
 
 <div class="space-y-8">
 <h2 class="text-3xl font-bold">All Posts</h2>
+<a wire:navigate href="{{ route('posts.create') }}" class="text-sm text-blue-500">Create</a>
 
 <div class="space-y-6">
     @foreach ($this->posts as $post)

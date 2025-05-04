@@ -7,5 +7,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Volt::route('/posts', 'pages.posts.index')->name('posts.index');
-Volt::route('/posts/{post:slug}', 'pages.posts.show')->name('posts.show');
+Route::prefix('posts')->as('posts.')->group(function () {
+    Volt::route('/', 'pages.posts.index')->name('index');
+    Volt::route('/create', 'pages.posts.create')->name('create');
+    Volt::route('/{post:slug}', 'pages.posts.show')->name('show');
+});
+
+
