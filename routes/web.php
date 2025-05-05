@@ -10,6 +10,7 @@ Route::get('/', function () {
 Route::prefix('posts')->as('posts.')->group(function () {
     Volt::route('/', 'pages.posts.index')->name('index');
     Volt::route('/create', 'pages.posts.create')->name('create');
+    Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
     Volt::route('/{post:slug}', 'pages.posts.show')->name('show');
 });
 

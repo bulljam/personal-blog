@@ -1,13 +1,22 @@
 @volt
 <?php
-use function Livewire\Volt\{state, rules, action, layout};
+
+use function Livewire\Volt\{state, mount, rules, action, layout};
 
 state([
+    'post' => null,
     'title' => '',
-    'excerpt' => null,
-    'content' => ''
+    'excerpt' => '',
+    'content' => '',
 ]);
 
+mount(function (\App\Models\Post $post) {
+    $this->post = $post;
+
+    $this->title = $post->title;
+    $this->excerpt = $post->excerpt;
+    $this->content = $post->content;
+});
 
 rules([
     'title' => 'required|string|max:255',
@@ -15,20 +24,17 @@ rules([
     'content' => 'required|string|min:10',
 ]);
 
-$store = action(function () {
+$update = action(function () {
     $this->validate();
 
-    $post = \App\Models\Post::create([
+    $this->post->update([
         'title' => $this->title,
         'slug' => \Illuminate\Support\Str::slug($this->title),
         'excerpt' => $this->excerpt,
         'content' => $this->content,
-        'published_at' => now(),
     ]);
 
-    $this->reset();
-
-    return redirect()->route('posts.show', $post->slug)->with('success', 'Post published successfully.');
+    return redirect()->route('posts.show', $this->post->slug)->with('success', 'Post edited successfully.');
 });
 
 layout('components.layouts.blog');
@@ -36,7 +42,7 @@ layout('components.layouts.blog');
 ?>
 
 <div>
-    <form wire:submit="store">
+    <form wire:submit="update">
         @csrf
         <label for="title">Title</label>
         <input type="text" wire:model="title" />
@@ -59,7 +65,8 @@ layout('components.layouts.blog');
                 {{ $message }}
             @enderror
         </div>
-        <button type="submit">Publish</button>
+        <button type="submit">Edit</button>
     </form>
 </div>
+
 @endvolt
