@@ -38,8 +38,7 @@ layout('components.layouts.blog');
                     Published {{ $post->published_at->format('F j, Y') }}
                 </div>
                 <div class="flex gap-2 mt-4">
-                    <a href="{{ route('posts.edit', $post->slug) }}" wire:navigate
-                        class="bg-blue-500 text-white px-4 py-2 rounded">Edit</a>
+        
                     <button wire:click="delete({{ $post->id }})" wire:confirm="Are you sure you want to delete this post?"
                         class="bg-red-500 text-white px-4 py-2 rounded">
                         Delete

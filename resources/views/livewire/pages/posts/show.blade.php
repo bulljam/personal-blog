@@ -5,7 +5,7 @@ use function Livewire\Volt\{mount, state, layout};
 
 $post = state(['post' => null]);
 
-mount(function(\App\Models\Post $post) {
+mount(function (\App\Models\Post $post) {
     $this->post = $post;
 });
 layout('components.layouts.blog');
@@ -45,6 +45,8 @@ layout('components.layouts.blog');
             {{ $this->post->content }}
         </div>
     </article>
+
+    <a href="{{ route('posts.edit', $this->post->slug) }}" wire:navigate class="bg-blue-500 text-white px-4 py-2 rounded">Edit</a>
 </div>
 @endvolt
 
