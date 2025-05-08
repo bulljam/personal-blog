@@ -41,23 +41,23 @@ layout('components.layouts.blog');
         <label for="name">Name</label>
         <input type="text" name="name" wire:model="name" />
         <div>
-            @errors('name')
+            @error('name')
             {{ $message }}
-            @enderrors
+            @enderror
         </div>
         <label for="email">Email</label>
         <input type="text" name="email" wire:model="email" />
         <div>
-            @errors('email')
+            @error('email')
             {{ $message }}
-            @enderrors
+            @enderror
         </div>
         <label for="password">Password</label>
         <input type="password" name="password" wire:model="password" />
         <div>
-            @errors('password')
+            @error('password')
             {{ $message }}
-            @enderrors
+            @enderror
         </div>
         <label for="password_confirmation">Confirm Password</label>
         <input type="password" name="password_confirmation" wire:model="password_confirmation" />

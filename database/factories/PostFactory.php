@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,6 +23,7 @@ class PostFactory extends Factory
             'excerpt' => fake()->paragraph(),
             'content' => fake()->paragraphs(3, true),
             'published_at' => fake()->boolean(80) ? fake()->dateTimeBetween('-1 year', 'now') : null,
+            'user_id' => User::factory()->create(),
         ];
     }
 }

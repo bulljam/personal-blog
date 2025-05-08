@@ -20,7 +20,9 @@ $login = action(function () {
     if (\Illuminate\Support\Facades\Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
         session()->regenerate();
 
-        return $this->redirectIntended(route('posts.index'))->with('success', 'Welcome Back ' . \Illuminate\Support\Facades\Auth::user()->name);
+        session()->flash('success', 'Welcome Back ' . auth()->user()->name);
+
+        return $this->redirectIntended(route('posts.index'));
     }
 
     return back()->withErrors([
@@ -35,17 +37,17 @@ layout('components.layouts.blog');
     <form wire:submit="login">
         <label for="email">Email</label>
         <input type="text" name="email" wire:model="email" />
-        <div>
-            @errors('email')
+        <div class="text-red-600">
+            @error('email')
             {{ $message }}
-            @enderrors
+            @enderror
         </div>
         <label for="password">Password</label>
         <input type="password" name="password" wire:model="password" />
         <div>
-            @errors('password')
+            @error('password')
             {{ $message }}
-            @enderrors
+            @enderror
         </div>
         <button type="submit">Login</button>
     </form>
