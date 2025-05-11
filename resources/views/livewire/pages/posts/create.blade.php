@@ -24,6 +24,7 @@ $store = action(function () {
         'excerpt' => $this->excerpt,
         'content' => $this->content,
         'published_at' => now(),
+        'user_id' => auth()->user()->id,
     ]);
 
     $this->reset();
@@ -37,7 +38,6 @@ layout('components.layouts.blog');
 
 <div>
     <form wire:submit="store">
-        @csrf
         <label for="title">Title</label>
         <input type="text" wire:model="title" />
         <div>

@@ -8,6 +8,7 @@ $posts = computed(fn() => \App\Models\Post::whereNotNull('published_at')
 
 $delete = action(function ($postId) {
     $post = \App\Models\Post::findOrFail($postId);
+    $this->authorize('delete', $post);
     $post->delete();
     session()->flash('success', 'Post deleted successfully');
 });
@@ -17,8 +18,14 @@ layout('components.layouts.blog');
 
 <div class="space-y-8">
     <h2 class="text-3xl font-bold">All Posts</h2>
-    <a wire:navigate href="{{ route('posts.create') }}" class="text-sm text-blue-500">Create</a>
-
+    @auth
+        <a wire:navigate href="{{ route('posts.create') }}" class="text-sm text-blue-500">Create</a>
+    @endauth
+    @if (session('success'))
+        <div class="text-green-800">
+            {{ session('success') }}
+        </div>
+    @endif
     <div class="space-y-6">
         @foreach ($this->posts as $post)
             <article class="border-b border-gray-200 dark:border-gray-800 pb-6">
@@ -38,11 +45,12 @@ layout('components.layouts.blog');
                     Published {{ $post->published_at->format('F j, Y') }}
                 </div>
                 <div class="flex gap-2 mt-4">
-        
-                    <button wire:click="delete({{ $post->id }})" wire:confirm="Are you sure you want to delete this post?"
-                        class="bg-red-500 text-white px-4 py-2 rounded">
-                        Delete
-                    </button>
+                    @can('delete', $post)
+                        <button wire:click="delete({{ $post->id }})" wire:confirm="Are you sure you want to delete this post?"
+                            class="bg-red-500 text-white px-4 py-2 rounded">
+                            Delete
+                        </button>
+                    @endcan
                 </div>
             </article>
         @endforeach

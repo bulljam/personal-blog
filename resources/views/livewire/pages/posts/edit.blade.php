@@ -27,6 +27,8 @@ rules([
 $update = action(function () {
     $this->validate();
 
+    $this->authorize('update', $this->post);
+
     $this->post->update([
         'title' => $this->title,
         'slug' => \Illuminate\Support\Str::slug($this->title),
@@ -43,7 +45,6 @@ layout('components.layouts.blog');
 
 <div>
     <form wire:submit="update">
-        @csrf
         <label for="title">Title</label>
         <input type="text" wire:model="title" />
         <div>
