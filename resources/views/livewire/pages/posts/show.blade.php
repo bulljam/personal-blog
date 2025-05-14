@@ -20,54 +20,75 @@ layout('components.layouts.blog');
 
 <div class="space-y-8">
     <div>
-        <a href="{{ route('posts.index') }}"
-            class="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            Back to Posts
+        <a href="{{ route('posts.index') }}" wire:navigate
+            class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
+            <x-heroicon-o-arrow-left class="w-4 h-4" />
+            <span>Back to Posts</span>
         </a>
     </div>
+
     @if (session('success'))
-        <div class="text-green-800">
-            {{ session('success') }}
+        <div class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
+            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
         </div>
     @endif
 
-    <header class="space-y-4">
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-            {{ $this->post->title }}
-        </h1>
+    <article class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-8">
+        <header class="space-y-4 mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                {{ $this->post->title }}
+            </h1>
 
-        @if($this->post->published_at)
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-                Published on {{ $this->post->published_at->format('F j, Y') }}
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                @if($this->post->published_at)
+                    <div class="flex items-center gap-1.5">
+                        <x-heroicon-o-calendar class="w-4 h-4" />
+                        <time datetime="{{ $this->post->published_at->toIso8601String() }}">
+                            {{ $this->post->published_at->format('F j, Y') }}
+                        </time>
+                    </div>
+                @endif
+                @if($this->post->user)
+                    <div class="flex items-center gap-1.5">
+                        <x-heroicon-o-user class="w-4 h-4" />
+                        <span>{{ $this->post->user->name }}</span>
+                    </div>
+                @endif
+            </div>
+        </header>
+
+        @if($this->post->excerpt)
+            <div class="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg">
+                <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {{ $this->post->excerpt }}
+                </p>
             </div>
         @endif
-    </header>
 
-    @if($this->post->excerpt)
-        <div
-            class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2">
-            {{ $this->post->excerpt }}
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+            <div class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                {{ $this->post->content }}
+            </div>
         </div>
-    @endif
 
-    <article class="prose prose-lg dark:prose-invert max-w-none border-b border-gray-200 dark:border-gray-800">
-        <div class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {{ $this->post->content }}
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex items-center gap-3">
+            @can('update', $this->post)
+                <a href="{{ route('posts.edit', $this->post->slug) }}" wire:navigate
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    <x-heroicon-o-pencil class="w-4 h-4" />
+                    <span>Edit Post</span>
+                </a>
+            @endcan
+            @can('delete', $this->post)
+                <button wire:click="delete({{ $this->post->id }})" 
+                    wire:confirm="Are you sure you want to delete this post?"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    <x-heroicon-o-trash class="w-4 h-4" />
+                    <span>Delete Post</span>
+                </button>
+            @endcan
         </div>
     </article>
-
-    @can('update', $this->post)
-        <a href="{{ route('posts.edit', $this->post->slug) }}" wire:navigate
-            class="bg-blue-500 text-white px-4 py-2 rounded">Edit</a>
-    @endcan
-    @can('delete', $this->post)
-        <button wire:click="delete({{ $this->post->id }})" wire:confirm="Are you sure you want to delete this post?"
-            class="bg-red-500 text-white px-4 py-2 rounded">
-            Delete
-        </button>
-    @endcan
 </div>
 @endvolt

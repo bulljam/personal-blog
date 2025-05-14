@@ -12,7 +12,7 @@ Route::get('/', function () {
 Route::prefix('posts')->as('posts.')->middleware('auth')->group(function () {
 
     Volt::route('/create', 'pages.posts.create')->middleware('throttle:create-post')->name('create');
-    
+
     Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
 
     Route::withoutMiddleware('auth')->group(function () {
