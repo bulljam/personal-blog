@@ -75,17 +75,17 @@ layout('components.layouts.blog');
         <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex items-center gap-3">
             @can('update', $this->post)
                 <a href="{{ route('posts.edit', $this->post->slug) }}" wire:navigate
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors">
                     <x-heroicon-o-pencil class="w-4 h-4" />
-                    <span>Edit Post</span>
+                    <span>Edit</span>
                 </a>
             @endcan
             @can('delete', $this->post)
                 <button wire:click="delete({{ $this->post->id }})" 
                     wire:confirm="Are you sure you want to delete this post?"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors">
                     <x-heroicon-o-trash class="w-4 h-4" />
-                    <span>Delete Post</span>
+                    <span>Delete</span>
                 </button>
             @endcan
         </div>
