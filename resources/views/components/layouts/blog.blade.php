@@ -78,9 +78,9 @@
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <h1 class="text-xl sm:text-2xl font-bold">
-                        <a href="{{ route('posts.index') }}"
+                        <a wire:navigate href="{{ route('posts.index') }}"
                             class="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            My Personal Blog
+                            BlogOne
                         </a>
                     </h1>
                     <nav class="flex items-center gap-4">

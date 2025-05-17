@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class PostFactory extends Factory
             'slug' => fake()->unique()->slug(),
             'excerpt' => fake()->paragraph(),
             'content' => fake()->paragraphs(3, true),
-            'published_at' => fake()->boolean(80) ? fake()->dateTimeBetween('-1 year', 'now') : null,
+            'published_at' => Carbon::now(),
             'user_id' => User::factory()->create(),
         ];
     }

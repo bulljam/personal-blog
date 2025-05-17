@@ -68,7 +68,10 @@ layout('components.layouts.blog');
                             <div class="flex items-center gap-1.5">
                                 <x-heroicon-o-calendar class="w-4 h-4" />
                                 <time datetime="{{ $post->published_at->toIso8601String() }}">
-                                    {{ $post->published_at->format('F j, Y') }}
+                                    {{ $post->published_at->format('F j, Y') }} 
+                                    @if ($post->is_edited)
+                                        (edited)
+                                    @endif
                                 </time>
                             </div>
                             @if($post->user)
