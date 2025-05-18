@@ -1,10 +1,12 @@
 @volt
 <?php
-use function Livewire\Volt\{computed, action, layout};
+use function Livewire\Volt\{uses, computed, action, layout};
 
-$posts = computed(fn() => \App\Models\Post::whereNotNull('published_at')
+uses(\Livewire\WithPagination::class);
+uses(\Livewire\WithoutUrlPagination::class);
+$posts = computed(fn() => \App\Models\Post::query()->whereNotNull('published_at')
     ->orderByDesc('published_at')
-    ->get());
+    ->paginate(10));
 
 $delete = action(function ($postId) {
     $post = \App\Models\Post::findOrFail($postId);
@@ -68,9 +70,12 @@ layout('components.layouts.blog');
                             <div class="flex items-center gap-1.5">
                                 <x-heroicon-o-calendar class="w-4 h-4" />
                                 <time datetime="{{ $post->published_at->toIso8601String() }}">
-                                    {{ $post->published_at->format('F j, Y') }} 
+                                    {{ $post->published_at->format('F j, Y') }}
                                     @if ($post->is_edited)
-                                        (edited)
+                                        <span
+                                            class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-50 dark:bg-yellow-800/25 text-yellow-700 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-700 align-middle">
+                                            edited
+                                        </span>
                                     @endif
                                 </time>
                             </div>
@@ -112,6 +117,7 @@ layout('components.layouts.blog');
                 <p class="text-sm text-gray-600 dark:text-gray-400">Check back later for new content</p>
             </div>
         @endforelse
+        {{ $this->posts->links() }}
     </div>
 </div>
 @endvolt
