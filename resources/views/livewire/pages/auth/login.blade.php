@@ -15,20 +15,46 @@ rules([
     'remember' => 'nullable|boolean',
 ]);
 
+
+
 $login = action(function () {
+    $fingerPrint = md5(
+        request()->ip() .
+        request()->input('email', '') .
+        request()->userAgent() .
+        request()->header('Accept-Language', '')
+    );
+    $loginKey = "login:{$fingerPrint}";
+
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($loginKey, 5)) {
+        $minutes = ceil(\Illuminate\Support\Facades\RateLimiter::availableIn($loginKey) / 60);
+
+        session()->flash('limit', "Too many failed login attempts. Please try again in {$minutes} minutes");
+        return;
+    }
+
     $this->validate();
     if (\Illuminate\Support\Facades\Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
         session()->regenerate();
 
         session()->flash('success', 'Welcome Back ' . auth()->user()->name);
 
+        session()->forget('limit');
+        \Illuminate\Support\Facades\RateLimiter::clear($loginKey);
+
         return $this->redirectIntended(route('posts.index'));
     }
+    $attempts = \Illuminate\Support\Facades\RateLimiter::attempts($loginKey);
+    $retryAfter = 60 * pow(2, min($attempts, 5));
+    \Illuminate\Support\Facades\RateLimiter::hit($loginKey, $retryAfter);
+
     $this->addError(
         'email',
         'Invalid Email or Password.',
     );
+
 });
+
 layout('components.layouts.blog');
 
 ?>
@@ -38,8 +64,13 @@ layout('components.layouts.blog');
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome Back</h2>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to your account to continue</p>
+            @if(session('limit'))
+                <p class="my-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                    <x-heroicon-o-exclamation-circle class="w-4 h-4" />
+                    {{ session('limit') }}
+                </p>
+            @endif
         </div>
-
         <form wire:submit="login" class="space-y-5">
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -93,7 +124,7 @@ layout('components.layouts.blog');
 
             <button type="submit"
                 class="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                wire:loading.attr="disabled">
+                wire:loading.attr="disabled" @disabled(session('limit'))>
                 <span wire:loading.remove wire:target="login">Sign In</span>
                 <span wire:loading wire:target="login" class="flex items-center gap-2">
                     <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"

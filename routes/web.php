@@ -23,8 +23,8 @@ Route::prefix('posts')->as('posts.')->middleware('auth')->group(function () {
 });
 
 Route::middleware('guest')->group(function () {
-    Volt::route('/login', 'pages.auth.login')->middleware(['throttle:login'])->name('login');
-    Volt::route('/register', 'pages.auth.register')->middleware(['throttle:register'])->name('register');
+    Volt::route('/login', 'pages.auth.login')->name('login');
+    Volt::route('/register', 'pages.auth.register')->name('register');
 });
 
 Route::middleware('auth')->post('/logout', function (Request $request) {

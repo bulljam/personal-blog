@@ -36,7 +36,7 @@ class Post extends Model
     protected function isEdited(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->published_at
+            get: fn () => $this->published_at
             && $this->updated_at->gt($this->published_at->addSeconds(5)),
         );
     }
@@ -50,4 +50,3 @@ class Post extends Model
     //     return $this->published_at->diffInSeconds($this->updated_at) > 5;
     // }
 }
-
