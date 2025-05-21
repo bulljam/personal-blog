@@ -70,6 +70,12 @@ layout('components.layouts.blog');
                     {{ session('limit') }}
                 </p>
             @endif
+            @if(session('success'))
+                <p class="my-2 text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <x-heroicon-o-check class="w-4 h-4" />
+                    {{ session('success') }}
+                </p>
+            @endif
         </div>
         <form wire:submit="login" class="space-y-5">
             <div>
@@ -144,6 +150,13 @@ layout('components.layouts.blog');
             <a href="{{ route('register') }}" wire:navigate
                 class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                 Sign up
+            </a>
+        </p>
+        <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+            Forgot your password?
+            <a href="{{ route('password.forgot') }}" wire:navigate
+                class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                Reset it here
             </a>
         </p>
     </div>

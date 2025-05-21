@@ -32,21 +32,19 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     protected function isEdited(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->published_at
-            && $this->updated_at->gt($this->published_at->addSeconds(5)),
-        );
-    }
-    // public function isEdited(): bool
-    // {
-    //     if(!$this->published_at)
-    //     {
-    //         return false;
-    //     }
+            get: function () {
+                $published_at = $this->getAttribute('published_at');
+                if (!$published_at)
+                    return false;
 
-    //     return $this->published_at->diffInSeconds($this->updated_at) > 5;
-    // }
+                $updated_at = $this->getAttribute('updated_at');
+
+                return $updated_at?->gt($published_at->addSeconds(5));
+            }
+        );
+
+    }
 }

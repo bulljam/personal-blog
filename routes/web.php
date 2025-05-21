@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('posts.index');
 })->name('home');
 
 Route::prefix('posts')->as('posts.')->middleware('auth')->group(function () {
@@ -25,6 +25,8 @@ Route::prefix('posts')->as('posts.')->middleware('auth')->group(function () {
 Route::middleware('guest')->group(function () {
     Volt::route('/login', 'pages.auth.login')->name('login');
     Volt::route('/register', 'pages.auth.register')->name('register');
+    Volt::route('/forgot-password', 'pages.auth.forgot-password')->name('password.forgot');
+    Volt::route('/reset-password', 'pages.auth.reset-password')->name('password.reset');
 });
 
 Route::middleware('auth')->post('/logout', function (Request $request) {
