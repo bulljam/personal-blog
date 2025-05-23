@@ -32,6 +32,7 @@ $resetPassword = action(function () {
     ], function ($user, $password) {
         $user->password = $password;
         $user->save();
+        $user->notify(new \App\Notifications\PasswordResetNotification());
     });
 
     if ($status === \Illuminate\Support\Facades\Password::PASSWORD_RESET) {
