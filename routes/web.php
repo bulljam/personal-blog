@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -9,17 +10,16 @@ Route::get('/', function () {
     return redirect()->route('posts.index');
 })->name('home');
 
-Route::prefix('posts')->as('posts.')->middleware('auth')->group(function () {
+Route::prefix('posts')->as('posts.')->group(function () {
 
-    Volt::route('/create', 'pages.posts.create')->middleware('throttle:create-post')->name('create');
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Volt::route('/create', 'pages.posts.create')->name('create');
 
-    Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
-
-    Route::withoutMiddleware('auth')->group(function () {
-        Volt::route('/', 'pages.posts.index')->name('index');
-        Volt::route('/{post:slug}', 'pages.posts.show')->name('show');
+        Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
     });
 
+    Volt::route('/', 'pages.posts.index')->name('index');
+    Volt::route('/{post:slug}', 'pages.posts.show')->name('show');
 });
 
 Route::middleware('guest')->group(function () {
@@ -37,3 +37,23 @@ Route::middleware('auth')->post('/logout', function (Request $request) {
 
     return redirect()->route('login');
 })->name('logout');
+
+Route::prefix('email/verify')->middleware('auth')->group(function () {
+    Volt::route('/', 'pages.auth.verify-email')->name('verification.notice');
+
+    Route::middleware('throttle:5,1')->post('/', function (Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('posts.index'));
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'Verification link was sent.');
+    })->name('verification.send');
+    Route::middleware(['throttle:5,1', 'signed'])->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('posts.index');
+    })->name('verification.verify');
+});
+
+
