@@ -53,9 +53,11 @@ $register = action(function () {
 
     \Illuminate\Support\Facades\Auth::login($user, $this->remember);
 
+    $user->sendEmailVerificationNotification();
+
     session()->forget('limit');
 
-    return $this->redirectIntended(route('posts.index'));
+    return redirect(route('verification.notice'));
 });
 
 layout('components.layouts.blog');
