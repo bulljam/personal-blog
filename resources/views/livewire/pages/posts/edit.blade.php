@@ -62,7 +62,7 @@ layout('components.layouts.blog');
                     Title <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="title" wire:model="title" 
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('title') (border-red-500 dark:border-red-500) @else dark:border-gray-700 @enderror"
+                    class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('title'), 'border-red-500 dark:border-red-500' => $errors->has('title')])"
                     placeholder="Enter post title" />
                 @error('title')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -78,7 +78,7 @@ layout('components.layouts.blog');
                     <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional, max 500 characters)</span>
                 </label>
                 <textarea id="excerpt" wire:model="excerpt" rows="3"
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none @error('excerpt') (border-red-500 dark:border-red-500) @else dark:border-gray-700 @enderror"
+                    class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none @class(['border-gray-300 dark:border-gray-700' => !$errors->has('excerpt'), 'border-red-500 dark:border-red-500' => $errors->has('excerpt')])"
                     placeholder="A brief summary of your post..."></textarea>
                 @if($excerpt)
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -98,7 +98,7 @@ layout('components.layouts.blog');
                     Content <span class="text-red-500">*</span>
                 </label>
                 <textarea id="content" wire:model="content" rows="12"
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none font-mono text-sm @error('content') (border-red-500 dark:border-red-500) @else dark:border-gray-700 @enderror"
+                    class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none font-mono text-sm @class(['border-gray-300 dark:border-gray-700' => !$errors->has('content'), 'border-red-500 dark:border-red-500' => $errors->has('content')])"
                     placeholder="Write your post content here..."></textarea>
                 @error('content')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">

@@ -28,7 +28,8 @@ layout('components.layouts.blog');
     </div>
 
     @if (session('success'))
-        <div class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
+        <div
+            class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
             <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
             <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
         </div>
@@ -59,7 +60,8 @@ layout('components.layouts.blog');
         </header>
 
         @if($this->post->excerpt)
-            <div class="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg">
+            <div
+                class="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg">
                 <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                     {{ $this->post->excerpt }}
                 </p>
@@ -81,8 +83,7 @@ layout('components.layouts.blog');
                 </a>
             @endcan
             @can('delete', $this->post)
-                <button wire:click="delete({{ $this->post->id }})" 
-                    wire:confirm="Are you sure you want to delete this post?"
+                <button wire:click="delete({{ $this->post->id }})" wire:confirm="Are you sure you want to delete this post?"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors">
                     <x-heroicon-o-trash class="w-4 h-4" />
                     <span>Delete</span>
