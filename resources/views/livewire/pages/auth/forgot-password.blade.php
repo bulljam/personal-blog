@@ -63,7 +63,7 @@ layout('components.layouts.blog');
                             <x-heroicon-o-envelope class="h-5 w-5 text-gray-400" />
                         </div>
                         <input type="email" id="email" name="email" wire:model="email"
-                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('email') border-red-500 dark:border-red-500 @enderror"
+                            class="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('email'), 'border-red-500 dark:border-red-500' => $errors->has('email')])"
                             placeholder="you@example.com" />
                     </div>
                     @error('email')
