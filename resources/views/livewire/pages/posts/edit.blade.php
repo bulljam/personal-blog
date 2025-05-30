@@ -61,7 +61,7 @@ layout('components.layouts.blog');
                 <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Title <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="title" wire:model="title" 
+                <input type="text" id="title" wire:model="title"
                     class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('title'), 'border-red-500 dark:border-red-500' => $errors->has('title')])"
                     placeholder="Enter post title" />
                 @error('title')
@@ -75,7 +75,8 @@ layout('components.layouts.blog');
             <div>
                 <label for="excerpt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Excerpt
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional, max 500 characters)</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional, max 500
+                        characters)</span>
                 </label>
                 <textarea id="excerpt" wire:model="excerpt" rows="3"
                     class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none @class(['border-gray-300 dark:border-gray-700' => !$errors->has('excerpt'), 'border-red-500 dark:border-red-500' => $errors->has('excerpt')])"
@@ -113,7 +114,7 @@ layout('components.layouts.blog');
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     Cancel
                 </a>
-                <button type="submit" 
+                <button type="submit"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="update" class="flex items-center gap-1">
@@ -121,9 +122,13 @@ layout('components.layouts.blog');
                         Save Changes
                     </span>
                     <span wire:loading wire:target="update" class="flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                     </span>
                 </button>

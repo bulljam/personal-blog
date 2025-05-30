@@ -9,10 +9,18 @@ $posts = computed(fn() => \App\Models\Post::query()->whereNotNull('published_at'
     ->paginate(10));
 
 $delete = action(function ($postId) {
+    if (!auth()->check()) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    if (!auth()->user()->hasVerifiedEmail()) {
+        return redirect()->route('verification.notice');
+    }
     $post = \App\Models\Post::findOrFail($postId);
     $this->authorize('delete', $post);
     $post->delete();
     session()->flash('success', 'Post deleted successfully');
+    return;
 });
 
 layout('components.layouts.blog');

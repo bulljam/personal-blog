@@ -20,16 +20,28 @@ rules([
 $store = action(function () {
     $this->validate();
 
+    $createPostKey = "create-post:" . request()->user()->id;
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($createPostKey, 5)) {
+        $minutes = ceil(\Illuminate\Support\Facades\RateLimiter::availableIn($createPostKey) / 60);
+
+        session()->flash('limit', "Too many posts created. Please try again in {$minutes} minutes");
+        return;
+    }
+
     $post = \App\Models\Post::create([
         'title' => $this->title,
         'slug' => \Illuminate\Support\Str::slug($this->title),
         'excerpt' => $this->excerpt,
         'content' => $this->content,
         'published_at' => now(),
-        'user_id' => auth()->user()->id,
+        'user_id' => auth()->id(),
     ]);
 
+    \Illuminate\Support\Facades\RateLimiter::hit($createPostKey, 3600);
+    
     $this->reset();
+
+    session()->forget('limit');
 
     return redirect()->route('posts.show', $post->slug)->with('success', 'Post published successfully.');
 });
@@ -49,6 +61,12 @@ layout('components.layouts.blog');
         </div>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Share your thoughts and ideas with the world</p>
     </div>
+    @if(session('limit'))
+        <p class="my-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+            <x-heroicon-o-exclamation-circle class="w-4 h-4" />
+            {{ session('limit') }}
+        </p>
+    @endif
 
     <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-8">
         <form wire:submit="store" class="space-y-6">
