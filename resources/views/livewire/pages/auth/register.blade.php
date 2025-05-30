@@ -23,6 +23,7 @@ rules([
 ]);
 
 $register = action(function () {
+    $this->validate();
 
     $fingerprint = md5(
         request()->ip() .
@@ -31,19 +32,13 @@ $register = action(function () {
     );
     $registerKey = "register:{$fingerprint}";
 
-    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($registerKey, 10)) {
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($registerKey, 5)) {
         $minutes = ceil(\Illuminate\Support\Facades\RateLimiter::availableIn($registerKey) / 60);
 
-        session()->flash('limit', "Too many registration attempts. Please try again in {$minutes} minutes");
+        session()->flash('limit', "Too many account registrations. Please try again in {$minutes} minutes");
 
         return;
     }
-
-    \Illuminate\Support\Facades\RateLimiter::hit($registerKey, 3600);
-
-    $this->validate();
-
-
 
     $user = \App\Models\User::create([
         'name' => $this->name,
@@ -54,6 +49,8 @@ $register = action(function () {
     \Illuminate\Support\Facades\Auth::login($user, $this->remember);
 
     $user->sendEmailVerificationNotification();
+
+    \Illuminate\Support\Facades\RateLimiter::hit($registerKey, 3600);
 
     session()->forget('limit');
 

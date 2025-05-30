@@ -1,6 +1,12 @@
 <?php
 
-use function Livewire\Volt\{layout};
+use function Livewire\Volt\{mount, layout};
+
+mount(function () {
+    if (auth()->user()->hasVerifiedEmail()) {
+        return redirect()->route('posts.index');
+    }
+});
 
 layout('components.layouts.blog');
 ?>

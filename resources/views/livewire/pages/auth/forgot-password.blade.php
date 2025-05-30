@@ -15,6 +15,26 @@ rules([
 $notify = action(function () {
     $this->validate();
 
+    $fingerPrint = md5(
+        request()->input('email', '') .
+        request()->ip() .
+        request()->userAgent() .
+        request()->header('Accept-Language', '')
+    );
+    $forgotPassKey = "forgotPassword:{$fingerPrint}";
+
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($forgotPassKey, 5)) {
+        $minutes = ceil(\Illuminate\Support\Facades\RateLimiter::availableIn($forgotPassKey) / 60);
+        
+        $this->resetErrorBag('email');
+
+        $this->addError('email', "Too many password reset attempts. Please try again in {$minutes} minutes.");
+
+        return;
+    }
+
+    \Illuminate\Support\Facades\RateLimiter::hit($forgotPassKey, 600);
+
     $status = \Illuminate\Support\Facades\Password::sendResetLink([
         'email' => $this->email,
     ]);
@@ -22,6 +42,8 @@ $notify = action(function () {
     if ($status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT) {
         session()->flash('success', __($status));
         $this->is_sent = true;
+
+        \Illuminate\Support\Facades\RateLimiter::clear($forgotPassKey);
         return;
     }
 

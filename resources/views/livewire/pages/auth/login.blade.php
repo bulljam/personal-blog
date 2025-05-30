@@ -18,12 +18,14 @@ rules([
 
 
 $login = action(function () {
+    $this->validate();
     $fingerPrint = md5(
         request()->ip() .
         request()->input('email', '') .
         request()->userAgent() .
         request()->header('Accept-Language', '')
     );
+    
     $loginKey = "login:{$fingerPrint}";
 
     if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($loginKey, 5)) {
@@ -32,8 +34,6 @@ $login = action(function () {
         session()->flash('limit', "Too many failed login attempts. Please try again in {$minutes} minutes");
         return;
     }
-
-    $this->validate();
     if (\Illuminate\Support\Facades\Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
         session()->regenerate();
 
