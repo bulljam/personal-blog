@@ -1,5 +1,6 @@
 <?php
 
+use App\Notifications\EmailVerificationNotification;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,6 @@ Route::prefix('posts')->as('posts.')->group(function () {
 
     Route::middleware(['auth', 'verified'])->group(function () {
         Volt::route('/create', 'pages.posts.create')->name('create');
-
         Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
     });
 
@@ -38,20 +38,22 @@ Route::middleware('auth')->post('/logout', function (Request $request) {
     return redirect()->route('login');
 })->name('logout');
 
-Route::prefix('email/verify')->middleware('auth')->group(function () {
+Route::prefix('email/verify')->middleware(['auth'])->group(function () {
+
     Volt::route('/', 'pages.auth.verify-email')->name('verification.notice');
 
-    Route::middleware('throttle:5,1')->post('/', function (Request $request) {
+    Route::post('/', function (Request $request) {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('posts.index'));
+            return redirect()->route('posts.index');
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('status', 'Verification link was sent.');
+        return redirect()->route('verification.notice')->with('status', 'Verification link was sent.');
     })->name('verification.send');
-    Route::middleware(['throttle:5,1', 'signed'])->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
+    Route::middleware('signed')->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+        // $request->user()->notify(new EmailVerificationNotification());
         return redirect()->route('posts.index');
     })->name('verification.verify');
 });
