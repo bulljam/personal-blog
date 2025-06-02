@@ -30,7 +30,7 @@ $resetPassword = action(function () {
         'password_confirmation' => $this->password_confirmation,
         'token' => $this->token,
     ], function ($user, $password) {
-        $user->password = $password;
+        $user->password = \Illuminate\Support\Facades\Hash::make($password);
         $user->save();
         $user->notify(new \App\Notifications\PasswordResetNotification());
     });
