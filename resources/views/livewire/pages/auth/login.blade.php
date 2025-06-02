@@ -12,7 +12,7 @@ state([
 rules([
     'email' => 'required|email|exists:users,email|max:255',
     'password' => 'required|min:8|max:255',
-    'remember' => 'nullable|boolean',
+    'remember' => 'boolean',
 ]);
 
 
@@ -25,7 +25,7 @@ $login = action(function () {
         request()->userAgent() .
         request()->header('Accept-Language', '')
     );
-    
+
     $loginKey = "login:{$fingerPrint}";
 
     if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($loginKey, 5)) {
@@ -145,20 +145,21 @@ layout('components.layouts.blog');
             </button>
         </form>
 
-        <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            Don't have an account?
-            <a href="{{ route('register') }}" wire:navigate
-                class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                Sign up
-            </a>
-        </p>
-        <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            Forgot your password?
+        <div class="mt-6 space-y-3">
             <a href="{{ route('password.forgot') }}" wire:navigate
-                class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                Reset it here
+                class="flex items-center justify-center gap-2 w-full py-2.5 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors">
+                <x-heroicon-o-key class="w-4 h-4" />
+                <span>Forgot your password?</span>
             </a>
-        </p>
+
+            <p class="text-center text-sm text-gray-600 dark:text-gray-400">
+                Don't have an account?
+                <a href="{{ route('register') }}" wire:navigate
+                    class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                    Sign up
+                </a>
+            </p>
+        </div>
     </div>
 </div>
 @endvolt
