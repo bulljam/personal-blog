@@ -32,13 +32,15 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     protected function isEdited(): Attribute
     {
         return Attribute::make(
             get: function () {
                 $published_at = $this->getAttribute('published_at');
-                if (!$published_at)
+                if (! $published_at) {
                     return false;
+                }
 
                 $updated_at = $this->getAttribute('updated_at');
 
