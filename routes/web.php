@@ -13,7 +13,7 @@ Route::get('/', function () {
 
 Route::prefix('posts')->as('posts.')->group(function () {
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth', 'verified', 'author'])->group(function () {
         Volt::route('/create', 'pages.posts.create')->name('create');
         Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
     });
@@ -53,9 +53,8 @@ Route::prefix('email/verify')->middleware(['auth'])->group(function () {
     })->name('verification.send');
     Route::middleware('signed')->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+
         // $request->user()->notify(new EmailVerificationNotification());
         return redirect()->route('posts.index');
     })->name('verification.verify');
 });
-
-

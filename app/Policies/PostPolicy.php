@@ -28,7 +28,7 @@ class PostPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAuthor();
     }
 
     /**
@@ -36,7 +36,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post): bool
     {
-        return $user->is($post->user);
+        return $user->isAuthor() && $user->is($post->user);
     }
 
     /**
@@ -44,7 +44,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post): bool
     {
-        return $user->is($post->user);
+        return $user->isAuthor() && $user->is($post->user);
 
     }
 
