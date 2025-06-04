@@ -28,6 +28,8 @@ $store = action(function () {
         return;
     }
 
+    $this->authorize('create', \App\Models\Post::class);
+
     $post = \App\Models\Post::create([
         'title' => $this->title,
         'slug' => \Illuminate\Support\Str::slug($this->title),
@@ -38,7 +40,7 @@ $store = action(function () {
     ]);
 
     \Illuminate\Support\Facades\RateLimiter::hit($createPostKey, 3600);
-    
+
     $this->reset();
 
     session()->forget('limit');

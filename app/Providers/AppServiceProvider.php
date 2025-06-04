@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Enums\Role;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,5 +29,15 @@ class AppServiceProvider extends ServiceProvider
         // RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by($request->email.$request->ip())->response(fn () => back()->withErrors(['email' => 'Too many login attempts. Please try again in a minute or contact support.'])));
 
         // RateLimiter::for('register', fn (Request $request) => Limit::perHour(4)->by($request->ip())->response(fn () => back()->withErrors(['email' => 'Too many registration attempts. Please try again in an hour or contact support.'])));
+
+        Blade::if(
+            Role::AUTHOR->value,
+            fn() => auth()->check() && auth()->user()->isAuthor()
+        );
+
+        Blade::if(
+            Role::READER->value,
+            fn() => auth()->check() && auth()->user()->isReader()
+        );
     }
 }

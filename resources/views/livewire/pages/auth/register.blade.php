@@ -14,7 +14,7 @@ state([
     'password_confirmation' => '',
     'role' => \App\Enums\Role::READER,
     'remember' => false,
-    'role_page' => true,
+    'role_page' => false,
     'user' => null,
 ]);
 
@@ -58,14 +58,20 @@ $register = action(function () {
     session()->forget('limit');
 });
 
-$setRole = action(function (\App\Enums\Role $role) {
-    dd($role);
-    $this->role = $role;
-    $this->addRole($this->user);
+$setRole = action(function (string $role) {
+    if ($enum = \App\Enums\Role::tryFrom($role)) {
+        $this->role = $enum;
+        $this->addRole();
+
+        return;
+    }
+
+    session()->forget('error');
+    session()->flash('error', 'Please fill choose a role before proceeding.');
 });
 
-$addRole = action(function (\App\Models\User $user) {
-    if (!$user) {
+$addRole = action(function () {
+    if (!$this->user) {
         $this->reset();
         $this->role_page = false;
         session()->forget('error');
@@ -73,18 +79,12 @@ $addRole = action(function (\App\Models\User $user) {
         return;
     }
 
-    if (!\App\Enums\Role::tryFrom($this->role)) {
-        session()->forget('error');
-        session()->flash('error', 'Invalid role.');
-        return;
-    }
+    $this->user->role = $this->role;
+    $this->user->save();
 
-    $user->role = $this->role;
-    $user->save();
+    \Illuminate\Support\Facades\Auth::login($this->user, $this->remember);
 
-    \Illuminate\Support\Facades\Auth::login($user, $this->remember);
-
-    $user->sendEmailVerificationNotification();
+    $this->user->sendEmailVerificationNotification();
 
 
     return redirect(route('verification.notice'));
@@ -94,12 +94,18 @@ layout('components.layouts.blog');
 ?>
 
 <div class="max-w-md mx-auto">
+    @if(session('error'))
+        <p class="mb-4 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+            <x-heroicon-o-exclamation-circle class="w-4 h-4" />
+            {{ session('error') }}
+        </p>
+    @endif
     @if($this->role_page)
         <div>
-            <div wire:click="setRole({{ \App\Enums\Role::AUTHOR }})" class="bg-red-700 p-4">
+            <div wire:click="setRole('{{ \App\Enums\Role::AUTHOR->value }}')" class="bg-red-700 p-4">
                 {{ \App\Enums\Role::AUTHOR->getLabel() }}
             </div>
-            <div wire:click="setRole({{ \App\Enums\Role::READER }})" class="bg-green-700 p-4 my-4">
+            <div wire:click="setRole('{{ \App\Enums\Role::READER->value }}')" class="bg-green-700 p-4 my-4">
                 {{ \App\Enums\Role::READER->getLabel() }}
             </div>
         </div>
@@ -126,10 +132,10 @@ layout('components.layouts.blog');
                             <x-heroicon-o-user class="h-5 w-5 text-gray-400" />
                         </div>
                         <input type="text" id="name" name="name" wire:model="name" @class([
-        'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
-        'border-red-500 dark:border-red-500' => $errors->has('name'),
-        'border-gray-300 dark:border-gray-700' => !$errors->has('name'),
-    ]) placeholder="John Doe" />
+                            'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                            'border-red-500 dark:border-red-500' => $errors->has('name'),
+                            'border-gray-300 dark:border-gray-700' => !$errors->has('name'),
+                        ])                    placeholder="John Doe" />
                     </div>
                     @error('name')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -148,10 +154,10 @@ layout('components.layouts.blog');
                             <x-heroicon-o-envelope class="h-5 w-5 text-gray-400" />
                         </div>
                         <input type="email" id="email" name="email" wire:model="email" @class([
-        'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
-        'border-red-500 dark:border-red-500' => $errors->has('email'),
-        'border-gray-300 dark:border-gray-700' => !$errors->has('email'),
-    ]) placeholder="you@example.com" />
+                            'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                            'border-red-500 dark:border-red-500' => $errors->has('email'),
+                            'border-gray-300 dark:border-gray-700' => !$errors->has('email'),
+                        ]) placeholder="you@example.com" />
                     </div>
                     @error('email')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -170,10 +176,10 @@ layout('components.layouts.blog');
                             <x-heroicon-o-lock-closed class="h-5 w-5 text-gray-400" />
                         </div>
                         <input type="password" id="password" name="password" wire:model="password" @class([
-        'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
-        'border-red-500 dark:border-red-500' => $errors->has('password'),
-        'border-gray-300 dark:border-gray-700' => !$errors->has('password'),
-    ]) placeholder="••••••••" />
+                            'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                            'border-red-500 dark:border-red-500' => $errors->has('password'),
+                            'border-gray-300 dark:border-gray-700' => !$errors->has('password'),
+                        ]) placeholder="••••••••" />
                     </div>
                     @error('password')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">

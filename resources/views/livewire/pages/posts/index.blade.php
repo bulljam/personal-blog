@@ -10,7 +10,7 @@ $posts = computed(fn() => \App\Models\Post::query()->whereNotNull('published_at'
 
 $delete = action(function ($postId) {
     if (!auth()->check()) {
-        abort(403, 'Unauthorized action.');
+        abort(403, 'You are not allowed to delete this post');
     }
 
     if (!auth()->user()->hasVerifiedEmail()) {
@@ -32,13 +32,13 @@ layout('components.layouts.blog');
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">All Posts</h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Discover the latest articles and stories</p>
         </div>
-        @auth
-            <a wire:navigate href="{{ route('posts.create') }}"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
-                <x-heroicon-o-plus class="w-4 h-4" />
-                <span>Create Post</span>
-            </a>
-        @endauth
+        @author
+        <a wire:navigate href="{{ route('posts.create') }}"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+            <x-heroicon-o-plus class="w-4 h-4" />
+            <span>Create Post</span>
+        </a>
+        @endauthor
     </div>
 
     @if (session('success'))
