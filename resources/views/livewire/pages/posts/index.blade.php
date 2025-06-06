@@ -1,12 +1,29 @@
 @volt
 <?php
-use function Livewire\Volt\{uses, computed, action, layout};
+use function Livewire\Volt\{uses, state, computed, action, layout};
 
 uses(\Livewire\WithPagination::class);
-uses(\Livewire\WithoutUrlPagination::class);
-$posts = computed(fn() => \App\Models\Post::query()->whereNotNull('published_at')
-    ->orderByDesc('published_at')
-    ->paginate(10));
+
+state([
+    'search' => '',
+    'author' => '',
+    'dateFilter' => '',
+]);
+
+$posts = computed(function () {
+    return \App\Models\Post::publishedPosts()
+        ->search($this->search)
+        ->author($this->author)
+        ->date($this->dateFilter)
+        ->paginate(5);
+});
+
+$authors = computed(fn() => \App\Models\User::where('role', 'author')->get());
+
+$clearFilters = action(function () {
+    $this->reset();
+    $this->resetPage();
+});
 
 $delete = action(function ($postId) {
     if (!auth()->check()) {
@@ -41,10 +58,97 @@ layout('components.layouts.blog');
         @endauthor
     </div>
 
+    <!-- Modern Filter Bar -->
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Search Input -->
+            <div class="md:col-span-2">
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Search Posts
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-magnifying-glass class="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input type="text" id="search" wire:model.live.debounce.300ms="search"
+                        placeholder="Search by title, excerpt, or content..."
+                        class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('search'), 'border-red-500 dark:border-red-500' => $errors->has('search')])" />
+                    <div wire:loading wire:target="search"
+                        class="absolute inset-y-3 right-0 pr-3 flex items-center justify-center">
+                        <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author Filter -->
+            <div>
+                <label for="author" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Author
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-user class="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select id="author" wire:model.live="author"
+                        class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none cursor-pointer @class(['border-gray-300 dark:border-gray-700' => !$errors->has('author'), 'border-red-500 dark:border-red-500' => $errors->has('author')])">
+                        <option value="">All Authors</option>
+                        @foreach ($this->authors as $author)
+                            <option value="{{ $author->id }}">{{ $author->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-chevron-down class="h-5 w-5 text-gray-400" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Filter -->
+            <div>
+                <label for="dateFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Date
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-calendar class="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select id="dateFilter" wire:model.live="dateFilter"
+                        class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none cursor-pointer @class(['border-gray-300 dark:border-gray-700' => !$errors->has('dateFilter'), 'border-red-500 dark:border-red-500' => $errors->has('dateFilter')])">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-chevron-down class="h-5 w-5 text-gray-400" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clear Filters Button -->
+        @if ($this->search || $this->author || $this->dateFilter)
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+                <button wire:click="clearFilters"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <x-heroicon-o-x-mark class="w-4 h-4" />
+                    <span>Clear all filters</span>
+                </button>
+            </div>
+        @endif
+    </div>
+
     @if (session('success'))
         <div
             class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
             <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
         </div>
     @endif
@@ -52,7 +156,7 @@ layout('components.layouts.blog');
     @if (session('error'))
         <div
             class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
             <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
         </div>
     @endif
@@ -121,8 +225,14 @@ layout('components.layouts.blog');
         @empty
             <div class="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
                 <x-heroicon-o-document-text class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No posts yet</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Check back later for new content</p>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No posts found</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    @if ($this->search || $this->author || $this->dateFilter)
+                        Try adjusting your filters to see more results.
+                    @else
+                        Check back later for new content.
+                    @endif
+                </p>
             </div>
         @endforelse
         {{ $this->posts->links() }}
