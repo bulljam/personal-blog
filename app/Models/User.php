@@ -47,7 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => Role::class,
+            // 'role' => Role::class,
         ];
     }
 
@@ -59,7 +59,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -76,5 +76,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isReader(): bool
     {
         return $this->role === Role::READER;
+    }
+
+    public function scopeAuthors($query)
+    {
+        return $query->where('role', Role::AUTHOR->value)
+            ->orderBy('name');
+    }
+
+    public function scopeAuthorsWithPosts($query)
+    {
+        return $query->authors()->whereHas('posts', function ($q) {
+            $q->publishedPosts();
+        });
     }
 }

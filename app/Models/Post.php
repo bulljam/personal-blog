@@ -38,7 +38,7 @@ class Post extends Model
         return Attribute::make(
             get: function () {
                 $published_at = $this->getAttribute('published_at');
-                if (! $published_at) {
+                if (!$published_at) {
                     return false;
                 }
 
@@ -48,5 +48,48 @@ class Post extends Model
             }
         );
 
+    }
+
+    public function scopePublishedPosts($query)
+    {
+        return $query
+            ->whereNotNull('published_at')
+            ->orderByDesc('published_at');
+    }
+
+    public function scopeSearch($query, $value)
+    {
+        if (!$value) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($value) {
+            $q->where('title', 'like', "%{$value}%")
+                ->orWhere('content', 'like', "%{$value}%")
+                ->orWhere('excerpt', 'like', "%{$value}%");
+        });
+    }
+
+    public function scopeAuthor($query, $user_id)
+    {
+        if (!$user_id) {
+            return $query;
+        }
+
+        return $query->where('user_id', $user_id);
+    }
+    public function scopeDate($query, $dateFilter)
+    {
+        if (!$dateFilter) {
+            return $query;
+        }
+
+        return match ($dateFilter) {
+            'today' => $query->whereDate('published_at', today()),
+            'week' => $query->where('published_at', '>=', now()->startOfWeek()),
+            'month' => $query->where('published_at', '>=', now()->startOfMonth()),
+            'year' => $query->where('published_at', '>=', now()->startOfYear()),
+            default => $query,
+        };
     }
 }
