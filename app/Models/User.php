@@ -90,4 +90,13 @@ class User extends Authenticatable implements MustVerifyEmail
             $q->publishedPosts();
         });
     }
+
+    public function scopeFilteredAuthors($query, $name)
+    {
+        $query = $query->authorsWithPosts();
+        if ($name) {
+          $query->where('name', 'like', "%{$name}%");
+        }
+        return $query;
+    }
 }
