@@ -8,6 +8,8 @@ state([
     'search' => '',
     'author' => '',
     'dateFilter' => '',
+    'authorSearch' => '',
+    'visible' => false,
 ]);
 
 $posts = computed(function () {
@@ -18,7 +20,8 @@ $posts = computed(function () {
         ->paginate(5);
 });
 
-$authors = computed(fn() => \App\Models\User::where('role', 'author')->get());
+$authors = computed(fn() => \App\Models\User::filteredAuthors($this->authorSearch)->get());
+
 
 $clearFilters = action(function () {
     $this->reset();
@@ -60,7 +63,7 @@ layout('components.layouts.blog');
 
     <!-- Modern Filter Bar -->
     <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 shadow-sm">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Search Input -->
             <div class="md:col-span-2">
                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -87,7 +90,7 @@ layout('components.layouts.blog');
                 </div>
             </div>
 
-            <!-- Author Filter -->
+            <!-- Author Filter - Searchable -->
             <div>
                 <label for="author" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Author
@@ -96,19 +99,24 @@ layout('components.layouts.blog');
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <x-heroicon-o-user class="h-5 w-5 text-gray-400" />
                     </div>
-                    <select id="author" wire:model.live="author"
-                        class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none cursor-pointer @class(['border-gray-300 dark:border-gray-700' => !$errors->has('author'), 'border-red-500 dark:border-red-500' => $errors->has('author')])">
-                        <option value="">All Authors</option>
-                        @foreach ($this->authors as $author)
-                            <option value="{{ $author->id }}">{{ $author->name }}</option>
-                        @endforeach
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <x-heroicon-o-chevron-down class="h-5 w-5 text-gray-400" />
-                    </div>
+                    <input type="text" id="authorSearch" wire:model.live.debounce.300ms="authorSearch"
+                        @focus="$wire.set('visible', true)" placeholder="Search author..."
+                        class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors border-gray-600 dark:border-gray-300" />
+
+                    <!-- Dropdown results -->
+                    @if($this->authorSearch && $this->visible)
+                        <div x-data @click="$wire.set('visible', false)"
+                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
+                            @foreach($this->authors as $author)
+                                <div wire:click="$set('author','{{ $author->id }}'); $set('visible', false)"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                    {{ $author->name }}
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
-
             <!-- Date Filter -->
             <div>
                 <label for="dateFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
