@@ -20,7 +20,7 @@ $posts = computed(function () {
         ->paginate(5);
 });
 
-$authors = computed(fn() => \App\Models\User::filteredAuthors($this->authorSearch)->get());
+$authors = computed(fn() => \App\Models\User::filteredAuthors($this->authorSearch)->limit(6)->get());
 
 
 $clearFilters = action(function () {
@@ -73,7 +73,7 @@ layout('components.layouts.blog');
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <x-heroicon-o-magnifying-glass class="h-5 w-5 text-gray-400" />
                     </div>
-                    <input type="text" id="search" wire:model.live.debounce.300ms="search"
+                    <input type="text" id="search" wire:model.live.debounce.300ms="search" autocomplete="off"
                         placeholder="Search by title, excerpt, or content..."
                         class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('search'), 'border-red-500 dark:border-red-500' => $errors->has('search')])" />
                     <div wire:loading wire:target="search"
@@ -100,19 +100,58 @@ layout('components.layouts.blog');
                         <x-heroicon-o-user class="h-5 w-5 text-gray-400" />
                     </div>
                     <input type="text" id="authorSearch" wire:model.live.debounce.300ms="authorSearch"
-                        @focus="$wire.set('visible', true)" placeholder="Search author..."
+                        autocomplete="off" @focus="$wire.set('visible', true)" placeholder="Search author..."
                         class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors border-gray-600 dark:border-gray-300" />
 
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
-                        <div x-data @click="$wire.set('visible', false)"
-                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
-                            @foreach($this->authors as $author)
-                                <div wire:click="$set('author','{{ $author->id }}'); $set('visible', false)"
-                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                    {{ $author->name }}
+                        <div x-data="{
+                                                                        showScrollIndicator: false,
+                                                                        init() {
+                                                                            this.$nextTick(() => {
+                                                                                this.checkScroll();
+                                                                                this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                                            });
+                                                                            // Recheck scroll when visible state changes
+                                                                            this.$watch('$wire.visible', (value) => {
+                                                                                if (value) {
+                                                                                    this.$nextTick(() => this.checkScroll());
+                                                                                }
+                                                                            });
+                                                                        },
+                                                                        checkScroll() {
+                                                                            const el = this.$refs.dropdown;
+                                                                            if (!el) return;
+                                                                            this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                                                        }
+                                                                    }"
+                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                            <!-- Dropdown Content -->
+                            <div x-ref="dropdown" @click.self="$wire.set('visible', false)"
+                                class="max-h-40 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                @foreach($this->authors as $author)
+                                    <div wire:click="$set('author','{{ $author->id }}'); $set('visible', false)"
+                                        class="px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors duration-150 border-l-2 border-transparent hover:border-blue-500 dark:hover:border-blue-400">
+                                        <span class="text-gray-900 dark:text-gray-100">{{ $author->name }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Animated Mouse Scroll Indicator -->
+                            <div x-show="showScrollIndicator" x-transition
+                                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none">
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <!-- Mouse Icon -->
+                                    <div
+                                        class="relative w-4 h-6 border border-gray-400 dark:border-gray-500 rounded-full flex items-start justify-center pt-1">
+                                        <div
+                                            class="w-0.5 h-1 bg-gray-400 dark:bg-gray-500 rounded-full animate-scroll-indicator">
+                                        </div>
+                                    </div>
+                                    <!-- Scroll Text -->
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Scroll</span>
                                 </div>
-                            @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
