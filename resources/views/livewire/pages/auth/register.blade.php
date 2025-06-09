@@ -131,7 +131,7 @@ layout('components.layouts.blog');
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <x-heroicon-o-user class="h-5 w-5 text-gray-400" />
                         </div>
-                        <input type="text" id="name" name="name" wire:model="name" @class([
+                        <input type="text" id="name" name="name" wire:model="name" autocomplete="off" @class([
                             'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                             'border-red-500 dark:border-red-500' => $errors->has('name'),
                             'border-gray-300 dark:border-gray-700' => !$errors->has('name'),
@@ -153,7 +153,7 @@ layout('components.layouts.blog');
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <x-heroicon-o-envelope class="h-5 w-5 text-gray-400" />
                         </div>
-                        <input type="email" id="email" name="email" wire:model="email" @class([
+                        <input type="email" id="email" name="email" wire:model="email" autocomplete="off" @class([
                             'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                             'border-red-500 dark:border-red-500' => $errors->has('email'),
                             'border-gray-300 dark:border-gray-700' => !$errors->has('email'),
@@ -175,7 +175,7 @@ layout('components.layouts.blog');
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <x-heroicon-o-lock-closed class="h-5 w-5 text-gray-400" />
                         </div>
-                        <input type="password" id="password" name="password" wire:model="password" @class([
+                        <input type="password" id="password" name="password" wire:model="password" autocomplete="new-password" @class([
                             'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                             'border-red-500 dark:border-red-500' => $errors->has('password'),
                             'border-gray-300 dark:border-gray-700' => !$errors->has('password'),
@@ -200,6 +200,7 @@ layout('components.layouts.blog');
                         </div>
                         <input type="password" id="password_confirmation" name="password_confirmation"
                             wire:model="password_confirmation"
+                            autocomplete="new-password"
                             class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                             placeholder="••••••••" />
                     </div>

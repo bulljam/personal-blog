@@ -73,6 +73,7 @@ layout('components.layouts.blog');
                         <x-heroicon-o-lock-closed class="h-5 w-5 text-gray-400" />
                     </div>
                     <input type="password" id="password" name="password" wire:model="password"
+                        autocomplete="new-password"
                         class="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('password'), 'border-red-500 dark:border-red-500' => $errors->has('password')])"
                         placeholder="••••••••" />
                 </div>
@@ -95,6 +96,7 @@ layout('components.layouts.blog');
                     </div>
                     <input type="password" id="password_confirmation" name="password_confirmation"
                         wire:model="password_confirmation"
+                        autocomplete="new-password"
                         class="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('password_confirmation'), 'border-red-500 dark:border-red-500' => $errors->has('password_confirmation')])"
                         placeholder="••••••••" />
                 </div>
