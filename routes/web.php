@@ -11,9 +11,9 @@ Route::get('/', function () {
     return redirect()->route('posts.index');
 })->name('home');
 
-Route::prefix('posts')->as('posts.')->group(function () {
+Route::prefix('posts')->as('posts.')->middleware(['auth', 'verified'])->group(function () {
 
-    Route::middleware(['auth', 'verified', 'author'])->group(function () {
+    Route::middleware(['author'])->group(function () {
         Volt::route('/create', 'pages.posts.create')->name('create');
         Volt::route('/{post:slug}/edit', 'pages.posts.edit')->name('edit');
     });
@@ -51,6 +51,7 @@ Route::prefix('email/verify')->middleware(['auth'])->group(function () {
 
         return redirect()->route('verification.notice')->with('status', 'Verification link was sent.');
     })->name('verification.send');
+    
     Route::middleware('signed')->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
 
