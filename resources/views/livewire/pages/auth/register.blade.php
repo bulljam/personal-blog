@@ -101,12 +101,56 @@ layout('components.layouts.blog');
         </p>
     @endif
     @if($this->role_page)
-        <div>
-            <div wire:click="setRole('{{ \App\Enums\Role::AUTHOR->value }}')" class="bg-red-700 p-4">
-                {{ \App\Enums\Role::AUTHOR->getLabel() }}
+        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 sm:p-8">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Choose Your Role</h2>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Select the role that best describes you</p>
             </div>
-            <div wire:click="setRole('{{ \App\Enums\Role::READER->value }}')" class="bg-green-700 p-4 my-4">
-                {{ \App\Enums\Role::READER->getLabel() }}
+
+            <div class="space-y-4">
+                <!-- Author Role -->
+                <button type="button" wire:click="setRole('{{ \App\Enums\Role::AUTHOR->value }}')"
+                    class="w-full text-left p-6 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="shrink-0 w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                            <x-heroicon-o-pencil class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div class="flex-1">
+                            <h3
+                                class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                {{ \App\Enums\Role::AUTHOR->getLabel() }}
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Create and publish your own blog posts
+                            </p>
+                        </div>
+                        <x-heroicon-o-chevron-right
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors shrink-0 mt-1" />
+                    </div>
+                </button>
+
+                <!-- Reader Role -->
+                <button type="button" wire:click="setRole('{{ \App\Enums\Role::READER->value }}')"
+                    class="w-full text-left p-6 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="shrink-0 w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                            <x-heroicon-o-book-open class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div class="flex-1">
+                            <h3
+                                class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                {{ \App\Enums\Role::READER->getLabel() }}
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Read and explore blog posts from authors
+                            </p>
+                        </div>
+                        <x-heroicon-o-chevron-right
+                            class="w-5 h-5 text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors shrink-0 mt-1" />
+                    </div>
+                </button>
             </div>
         </div>
     @else
@@ -135,7 +179,7 @@ layout('components.layouts.blog');
                             'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                             'border-red-500 dark:border-red-500' => $errors->has('name'),
                             'border-gray-300 dark:border-gray-700' => !$errors->has('name'),
-                        ])                    placeholder="John Doe" />
+                        ])                placeholder="John Doe" />
                     </div>
                     @error('name')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -175,11 +219,12 @@ layout('components.layouts.blog');
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <x-heroicon-o-lock-closed class="h-5 w-5 text-gray-400" />
                         </div>
-                        <input type="password" id="password" name="password" wire:model="password" autocomplete="new-password" @class([
-                            'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
-                            'border-red-500 dark:border-red-500' => $errors->has('password'),
-                            'border-gray-300 dark:border-gray-700' => !$errors->has('password'),
-                        ]) placeholder="••••••••" />
+                        <input type="password" id="password" name="password" wire:model="password"
+                            autocomplete="new-password" @class([
+                                'block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                                'border-red-500 dark:border-red-500' => $errors->has('password'),
+                                'border-gray-300 dark:border-gray-700' => !$errors->has('password'),
+                            ]) placeholder="••••••••" />
                     </div>
                     @error('password')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
@@ -199,8 +244,7 @@ layout('components.layouts.blog');
                             <x-heroicon-o-lock-closed class="h-5 w-5 text-gray-400" />
                         </div>
                         <input type="password" id="password_confirmation" name="password_confirmation"
-                            wire:model="password_confirmation"
-                            autocomplete="new-password"
+                            wire:model="password_confirmation" autocomplete="new-password"
                             class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                             placeholder="••••••••" />
                     </div>
