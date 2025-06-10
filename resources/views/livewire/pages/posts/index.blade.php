@@ -60,6 +60,22 @@ layout('components.layouts.blog');
         </a>
         @endauthor
     </div>
+    @if (session('success'))
+        <div
+            class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
+            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div
+            class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
+            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
+            <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+        </div>
+    @endif
+
 
     <!-- Modern Filter Bar -->
     <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 shadow-sm">
@@ -106,25 +122,25 @@ layout('components.layouts.blog');
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
                         <div x-data="{
-                                                                        showScrollIndicator: false,
-                                                                        init() {
-                                                                            this.$nextTick(() => {
-                                                                                this.checkScroll();
-                                                                                this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
-                                                                            });
-                                                                            // Recheck scroll when visible state changes
-                                                                            this.$watch('$wire.visible', (value) => {
-                                                                                if (value) {
-                                                                                    this.$nextTick(() => this.checkScroll());
-                                                                                }
-                                                                            });
-                                                                        },
-                                                                        checkScroll() {
-                                                                            const el = this.$refs.dropdown;
-                                                                            if (!el) return;
-                                                                            this.showScrollIndicator = el.scrollHeight > el.clientHeight;
-                                                                        }
-                                                                    }"
+                                                                            showScrollIndicator: false,
+                                                                            init() {
+                                                                                this.$nextTick(() => {
+                                                                                    this.checkScroll();
+                                                                                    this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                                                });
+                                                                                // Recheck scroll when visible state changes
+                                                                                this.$watch('$wire.visible', (value) => {
+                                                                                    if (value) {
+                                                                                        this.$nextTick(() => this.checkScroll());
+                                                                                    }
+                                                                                });
+                                                                            },
+                                                                            checkScroll() {
+                                                                                const el = this.$refs.dropdown;
+                                                                                if (!el) return;
+                                                                                this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                                                            }
+                                                                        }"
                             class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                             <!-- Dropdown Content -->
                             <div x-ref="dropdown" @click.self="$wire.set('visible', false)"
@@ -191,23 +207,6 @@ layout('components.layouts.blog');
             </div>
         @endif
     </div>
-
-    @if (session('success'))
-        <div
-            class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
-            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div
-            class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
-            <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
-        </div>
-    @endif
-
     <div class="space-y-6">
         @forelse ($this->posts as $post)
             <article
