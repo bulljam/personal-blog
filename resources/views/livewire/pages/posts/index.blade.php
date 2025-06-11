@@ -122,50 +122,52 @@ layout('components.layouts.blog');
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
                         <div x-data="{
-                                                                            showScrollIndicator: false,
-                                                                            init() {
-                                                                                this.$nextTick(() => {
-                                                                                    this.checkScroll();
-                                                                                    this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
-                                                                                });
-                                                                                // Recheck scroll when visible state changes
-                                                                                this.$watch('$wire.visible', (value) => {
-                                                                                    if (value) {
-                                                                                        this.$nextTick(() => this.checkScroll());
-                                                                                    }
-                                                                                });
-                                                                            },
-                                                                            checkScroll() {
-                                                                                const el = this.$refs.dropdown;
-                                                                                if (!el) return;
-                                                                                this.showScrollIndicator = el.scrollHeight > el.clientHeight;
-                                                                            }
-                                                                        }"
-                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-                            <!-- Dropdown Content -->
-                            <div x-ref="dropdown" @click.self="$wire.set('visible', false)"
-                                class="max-h-40 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                                @foreach($this->authors as $author)
-                                    <div wire:click="$set('author','{{ $author->id }}'); $set('visible', false)"
-                                        class="px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors duration-150 border-l-2 border-transparent hover:border-blue-500 dark:hover:border-blue-400">
-                                        <span class="text-gray-900 dark:text-gray-100">{{ $author->name }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <!-- Animated Mouse Scroll Indicator -->
-                            <div x-show="showScrollIndicator" x-transition
-                                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none">
-                                <div class="flex flex-col items-center gap-1.5">
-                                    <!-- Mouse Icon -->
-                                    <div
-                                        class="relative w-4 h-6 border border-gray-400 dark:border-gray-500 rounded-full flex items-start justify-center pt-1">
-                                        <div
-                                            class="w-0.5 h-1 bg-gray-400 dark:bg-gray-500 rounded-full animate-scroll-indicator">
+                                                    showScrollIndicator: false,
+                                                    init() {
+                                                        this.$nextTick(() => {
+                                                            this.checkScroll();
+                                                            this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                        });
+                                                        this.$watch('$wire.visible', (value) => {
+                                                            if (value) {
+                                                                this.$nextTick(() => this.checkScroll());
+                                                            }
+                                                        });
+                                                    },
+                                                    checkScroll() {
+                                                        const el = this.$refs.dropdown;
+                                                        if (!el) return;
+                                                        this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                                    }
+                                                }" class="absolute z-10 mt-1 w-full">
+                            <!-- Dropdown Container -->
+                            <div
+                                class="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
+                                <!-- Scrollable Content -->
+                                <div x-ref="dropdown" @click="$wire.set('visible', false)"
+                                    class="max-h-40 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                    @foreach($this->authors as $author)
+                                        <div wire:click="$set('author','{{ $author->id }}'); $set('visible', false)"
+                                            class="px-4 py-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors duration-150 border-l-2 border-transparent hover:border-blue-500 dark:hover:border-blue-400">
+                                            <span class="text-gray-900 dark:text-gray-100">{{ $author->name }}</span>
                                         </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Mouse Scroll Indicator Overlay -->
+                                <div x-show="showScrollIndicator" x-transition
+                                    class="absolute inset-x-0 bottom-0 h-12 pointer-events-none flex items-end justify-center pb-2">
+                                    <div class="flex flex-col items-center gap-1.5">
+                                        <!-- Mouse Icon -->
+                                        <div
+                                            class="relative w-4 h-6 border border-gray-400 dark:border-gray-500 rounded-full flex items-start justify-center pt-1 bg-gray-100 dark:bg-gray-700">
+                                            <div
+                                                class="w-0.5 h-1 bg-gray-500 dark:bg-gray-300 rounded-full animate-scroll-indicator">
+                                            </div>
+                                        </div>
+                                        <!-- Scroll Text -->
+                                        <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Scroll</span>
                                     </div>
-                                    <!-- Scroll Text -->
-                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Scroll</span>
                                 </div>
                             </div>
                         </div>
