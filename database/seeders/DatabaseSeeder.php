@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         User::factory(10)->create([
-            'name' => 'Sami ' . fake()->name(),
+            'name' => fn() => 'Sami ' . fake()->name(),
             'role' => Role::AUTHOR,
         ]);
 
