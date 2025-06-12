@@ -20,7 +20,7 @@ $posts = computed(function () {
         ->paginate(5);
 });
 
-$authors = computed(fn() => \App\Models\User::filteredAuthors($this->authorSearch)->limit(6)->get());
+$authors = computed(fn() => \App\Models\User::authorsByName($this->authorSearch)->limit(6)->get());
 
 
 $clearFilters = action(function () {
