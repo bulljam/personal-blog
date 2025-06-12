@@ -47,7 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            // 'role' => Role::class,
+            'role' => Role::class,
         ];
     }
 
@@ -91,7 +91,7 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    public function scopeFilteredAuthors($query, $name)
+    public function scopeAuthorsByName($query, $name)
     {
         $query = $query->authorsWithPosts();
         if ($name) {
