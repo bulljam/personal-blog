@@ -24,7 +24,7 @@ class PostFactory extends Factory
             'excerpt' => fake()->paragraph(),
             'content' => fake()->paragraphs(3, true),
             'published_at' => Carbon::now(),
-            'user_id' => User::query()->inRandomOrder()->value('id'),
+            'user_id' => User::inRandomOrder()->value('id') ?? User::factory()->create()->id,
         ];
     }
 }
