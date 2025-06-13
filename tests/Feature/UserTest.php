@@ -79,14 +79,20 @@ it('filters authors with posts scope', function () {
         'role' => Role::AUTHOR,
     ]);
     $author3 = User::factory()->create([
+        'role' => Role::READER,
+    ]);
+    $author4 = User::factory()->create([
         'role' => Role::AUTHOR,
     ]);
 
-    Post::factory(2)->create([
+    Post::factory()->create([
         'user_id' => $author1->id,
     ]);
     Post::factory()->create([
         'user_id' => $author2->id,
+    ]);
+    Post::factory()->create([
+        'user_id' => $author3->id,
     ]);
 
     $authorsWithPosts = User::authorsWithPosts()->get();
