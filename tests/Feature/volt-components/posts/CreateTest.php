@@ -56,7 +56,7 @@ it('creates post when store action is called on valid data', function () {
     $user->markEmailAsVerified();
 
     $component = Volt::test('pages.posts.create');
-    dd($component->actingAs($user));
+    $component->actingAs($user);
 
     $component->set('title', 'My post')
         ->set('content', 'My content')
