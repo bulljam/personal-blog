@@ -214,3 +214,56 @@ it('deletes a post by its ID', function () {
     $component->call('delete', $post1->id);
     expect(Post::find($post1->id))->toBeNull();
 });
+
+it('displays all posts', function () {
+    $post1 = Post::factory()->create();
+    $post2 = Post::factory()->create();
+
+    $component = Volt::test('pages.posts.index');
+    $component->assertSee('All Posts');
+    $component->assertSee($post1->title);
+    $component->assertSee($post1->excerpt);
+    $component->assertSee($post1->user->name);
+    $component->assertSee($post2->title);
+    $component->assertSee($post2->excerpt);
+    $component->assertSee($post2->user->name);
+    $component->assertDontSee('edited');
+
+    $post2->title = 'New Title';
+    $post2->updated_at = now()->addMinute();
+    $post2->save();
+    $component = Volt::test('pages.posts.index');
+    $component->assertSee('edited');
+});
+
+it('shows create, edit, delete buttons to authors only', function () {
+    $author = User::factory()->create([
+        'role' => Role::AUTHOR,
+    ]);
+
+
+    Post::factory()->create([
+        'user_id' => $author->id,
+    ]);
+
+    $reader = User::factory()->create([
+        'role' => Role::READER,
+    ]);
+
+    $this->actingAs($author);
+    $component = Volt::test('pages.posts.index');
+    $component->assertSee('Create Post');
+    $component->assertSee('Edit');
+    $component->assertSee('Delete');
+
+    $this->actingAs($reader);
+    $component = Volt::test('pages.posts.index');
+    $component->assertDontSee('Create Post');
+    $component->assertDontSee('Edit');
+    $component->assertDontSee('Delete');
+});
+
+it('displays empty state when no posts exist', function () {
+    Volt::test('pages.posts.index')
+        ->assertSee('Check back later for new content.');
+});
