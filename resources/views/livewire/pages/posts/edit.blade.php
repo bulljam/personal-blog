@@ -36,17 +36,17 @@ $update = action(function () {
         'content' => $this->content,
     ]);
 
-    return redirect()->route('posts.show', $this->post->slug)->with('success', 'Post edited successfully.');
+    return redirect()->route('dashboard.index', $this->post->slug)->with('success', 'Post edited successfully.');
 });
 
-layout('components.layouts.blog');
+layout('components.layouts.dashboard');
 
 ?>
 
 <div class="max-w-3xl mx-auto">
     <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-            <a href="{{ route('posts.show', $this->post->slug) }}" wire:navigate
+            <a href="{{ route('dashboard.index') }}" wire:navigate
                 class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                 <x-heroicon-o-arrow-left class="w-5 h-5" />
             </a>
@@ -113,7 +113,7 @@ layout('components.layouts.blog');
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
-                <a href="{{ route('posts.show', $this->post->slug) }}" wire:navigate
+                <a href="{{ route('dashboard.index', $this->post->slug) }}" wire:navigate
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     Cancel
                 </a>
