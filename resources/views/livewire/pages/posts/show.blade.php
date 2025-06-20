@@ -14,13 +14,13 @@ $delete = action(function ($postId) {
     $post->delete();
     session()->flash('success', 'Post deleted successfully');
 });
-layout('components.layouts.blog');
+layout('components.layouts.dashboard');
 ?>
 
 
 <div class="space-y-8">
     <div>
-        <a href="{{ route('posts.index') }}" wire:navigate
+        <a href="{{ route('dashboard.index') }}" wire:navigate
             class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
             <x-heroicon-o-arrow-left class="w-4 h-4" />
             <span>Back to Posts</span>
