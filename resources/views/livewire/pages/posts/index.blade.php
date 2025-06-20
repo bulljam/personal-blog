@@ -28,21 +28,6 @@ $clearFilters = action(function () {
     $this->resetPage();
 });
 
-$delete = action(function ($postId) {
-    if (!auth()->check()) {
-        abort(403, 'You are not allowed to delete this post');
-    }
-
-    if (!auth()->user()->hasVerifiedEmail()) {
-        return redirect()->route('verification.notice');
-    }
-    $post = \App\Models\Post::findOrFail($postId);
-    $this->authorize('delete', $post);
-    $post->delete();
-    session()->flash('success', 'Post deleted successfully');
-    return;
-});
-
 layout('components.layouts.blog');
 ?>
 
