@@ -39,5 +39,10 @@ class AppServiceProvider extends ServiceProvider
             Role::READER->value,
             fn() => auth()->check() && auth()->user()->isReader()
         );
+
+        Blade::if(
+            'session',
+            fn($key) => !empty(session($key))
+        );
     }
 }
