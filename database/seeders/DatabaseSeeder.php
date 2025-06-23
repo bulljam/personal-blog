@@ -21,13 +21,21 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        User::factory(10)->create([
-            'name' => fn() => 'Sami ' . fake()->name(),
+        User::factory()->create([
+            'name' => 'John Doe ',
+            'email' => 'john.doe@example.com',
             'role' => Role::AUTHOR,
         ]);
 
+
         $this->call([
             PostSeeder::class,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Alex Brown ',
+            'email' => 'alex.brown@example.com',
+            'role' => Role::READER,
         ]);
     }
 }
