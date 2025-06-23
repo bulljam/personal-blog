@@ -63,4 +63,5 @@ Route::prefix('email/verify')->middleware(['auth'])->group(function () {
 
 Route::prefix('dashboard')->as('dashboard.')->middleware(['auth', 'verified'])->group(function () {
     Volt::route('/', 'pages.dashboard.index')->name('index');
+    Volt::route('/edit', 'pages.dashboard.edit')->name('edit');
 });
