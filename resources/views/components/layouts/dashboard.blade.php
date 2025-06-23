@@ -76,13 +76,20 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col">
             <!-- Logo/Brand -->
-            <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 <a wire:navigate href="{{ route('dashboard.index') }}"
                     class="text-xl font-bold text-gray-900 dark:text-gray-100">
                     BlogOne
                 </a>
+                @persist('dark-mode-toggle')
+                <button @click="toggleDarkMode()"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    aria-label="Toggle dark mode">
+                    <x-heroicon-o-sun x-show="!darkMode" class="w-5 h-5" />
+                    <x-heroicon-o-moon x-show="darkMode" class="w-5 h-5" />
+                </button>
+                @endpersist
             </div>
-
             <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 <a wire:navigate href="{{ route('dashboard.index') }}"
@@ -92,11 +99,11 @@
                 </a>
 
                 @author
-                    <a wire:navigate href="{{ route('posts.create') }}"
-                        class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                        <x-heroicon-o-plus class="w-5 h-5" />
-                        <span>Create Post</span>
-                    </a>
+                <a wire:navigate href="{{ route('posts.create') }}"
+                    class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                    <x-heroicon-o-plus class="w-5 h-5" />
+                    <span>Create Post</span>
+                </a>
                 @endauthor
 
                 <a wire:navigate href="{{ route('posts.index') }}"
@@ -111,7 +118,7 @@
                 <div class="flex items-center gap-3 mb-4">
                     <div
                         class="w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white text-sm font-semibold">
-                        {{ auth()->user()->initials() }} 
+                        {{ auth()->user()->initials() }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
