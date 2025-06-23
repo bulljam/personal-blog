@@ -1,0 +1,153 @@
+@volt
+<?php
+
+use function Livewire\Volt\{state, mount, rules, action, layout};
+state([
+    'user' => null,
+    'name' => '',
+    'email' => '',
+    'role' => '',
+]);
+
+rules([
+    'name' => 'required|string|max:255',
+]);
+
+mount(function () {
+    $this->user = auth()->user();
+    $this->name = $this->user->name;
+    $this->email = $this->user->email;
+    $this->role = $this->user->role;
+});
+
+$updateName = action(function () {
+    $this->validate();
+    if ($this->user->name !== $this->name) {
+        $this->user->name = $this->name;
+        $this->user->save();
+        session()->flash('success', 'Name updated successfully.');
+        return redirect()->route('dashboard.edit');
+    } else {
+        session()->flash('info', 'No changes detected.');
+    }
+});
+
+layout('components.layouts.dashboard');
+?>
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Profile Settings</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Manage your account information and preferences
+        </p>
+    </div>
+
+    <!-- Success Message -->
+    @session('success')
+        <div
+            class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
+            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+        </div>
+    @endsession
+
+    <!-- Profile Card -->
+    <div
+        class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <!-- Avatar Section -->
+        <div class="px-6 py-8 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex items-center gap-6">
+                <div
+                    class="w-20 h-20 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white text-2xl font-semibold">
+                    {{ $this->user->initials() }}
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        {{ $this->name }}
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {{ $this->email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Fields -->
+        <div class="divide-y divide-gray-200 dark:divide-gray-800">
+            <!-- Name -->
+            <div
+                class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div class="flex-1">
+                    <label
+                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Name
+                    </label>
+                    <p class="text-sm text-gray-900 dark:text-gray-100">
+                        {{ $this->name }}
+                    </p>
+                </div>
+                <x-partials.name-form :name="$this->name" updateName="updateName" />
+            </div>
+
+            <!-- Email -->
+            <div
+                class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div class="flex-1">
+                    <label
+                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Email
+                    </label>
+                    <p class="text-sm text-gray-900 dark:text-gray-100">
+                        {{ $this->email }}
+                    </p>
+                </div>
+                <button
+                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <x-heroicon-o-pencil class="w-4 h-4" />
+                </button>
+            </div>
+
+            <!-- Password -->
+            <div
+                class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div class="flex-1">
+                    <label
+                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Password
+                    </label>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                        ••••••••••••
+                    </p>
+                </div>
+                <button
+                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <x-heroicon-o-pencil class="w-4 h-4" />
+                </button>
+            </div>
+
+            <!-- Role -->
+            <div
+                class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div class="flex-1">
+                    <label
+                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Role
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
+                            {{ $this->role->getLabel() }}
+                        </span>
+                    </div>
+                </div>
+                <button
+                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <x-heroicon-o-pencil class="w-4 h-4" />
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endvolt
