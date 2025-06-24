@@ -1,4 +1,4 @@
-@props(['name' => '', 'updateName' => null])
+@props(['name' => '', 'update' => null])
 
 <div x-data="{ open: false }" @close-modal.window="open = false">
     <!-- Edit Button -->
@@ -9,13 +9,13 @@
 
     <!-- Modal with Form -->
     <div x-show="open" x-cloak x-transition>
-        <x-partials.modal title="Update Name">
-            <form wire:submit="updateName" class="space-y-4">
+        <x-partials.modal title="Update Email">
+            <form wire:submit="update('email')" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Name
+                        Email
                     </label>
-                    <input type="text" wire:model="name" @class([
+                    <input type="text" wire:model="email" @class([
                         'w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                         'border-red-500 dark:border-red-500' => $errors->has('name'),
                         'border-gray-300 dark:border-gray-700' => !$errors->has('name'),
