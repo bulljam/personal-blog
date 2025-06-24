@@ -1,16 +1,26 @@
 @volt
 <?php
 
-use function Livewire\Volt\{state, mount, rules, action, layout};
+use function Livewire\Volt\{state, computed, mount, rules, action, layout};
 state([
     'user' => null,
     'name' => '',
     'email' => '',
+    'password' => '',
     'role' => '',
 ]);
 
+$messages = computed(
+    fn() => [
+        'name' => 'Name',
+        'email' => 'Email',
+        'role' => 'Role',
+        'password' => 'Password',
+    ]
+);
 rules([
     'name' => 'required|string|max:255',
+    'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
 ]);
 
 mount(function () {
@@ -20,12 +30,14 @@ mount(function () {
     $this->role = $this->user->role;
 });
 
-$updateName = action(function () {
-    $this->validate();
-    if ($this->user->name !== $this->name) {
-        $this->user->name = $this->name;
+$update = action(function ($field) {
+    $this->validateOnly($field);
+    if ($this->user->$field !== $this->$field) {
+        $this->user->$field = $this->$field;
         $this->user->save();
-        session()->flash('success', 'Name updated successfully.');
+        $this->user->refresh();
+
+        session()->flash('success', $this->messages[$field] . ' updated successfully.');
         return redirect()->route('dashboard.edit');
     } else {
         session()->flash('info', 'No changes detected.');
@@ -88,7 +100,7 @@ layout('components.layouts.dashboard');
                         {{ $this->name }}
                     </p>
                 </div>
-                <x-partials.name-form :name="$this->name" updateName="updateName" />
+                <x-partials.name-form :name="$this->name" update="update" />
             </div>
 
             <!-- Email -->
@@ -103,10 +115,7 @@ layout('components.layouts.dashboard');
                         {{ $this->email }}
                     </p>
                 </div>
-                <button
-                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <x-heroicon-o-pencil class="w-4 h-4" />
-                </button>
+                <x-partials.email-form :name="$this->name" update="update" />
             </div>
 
             <!-- Password -->
