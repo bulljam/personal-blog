@@ -1,4 +1,4 @@
-@props(['name' => '', 'updateName' => null])
+@props(['name' => '', 'update' => null])
 
 <div x-data="{ open: false }" @close-modal.window="open = false">
     <!-- Edit Button -->
@@ -10,7 +10,7 @@
     <!-- Modal with Form -->
     <div x-show="open" x-cloak x-transition>
         <x-partials.modal title="Update Name">
-            <form wire:submit="updateName" class="space-y-4">
+            <form wire:submit="update('name')" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Name
