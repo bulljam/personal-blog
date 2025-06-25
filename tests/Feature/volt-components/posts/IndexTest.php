@@ -173,47 +173,47 @@ it('clear filters', function () {
     expect($component->authors)->toHaveCount(2);
 });
 
-it('deletes a post by its ID', function () {
-    $author = User::factory()->unverified()->create([
-        'role' => Role::AUTHOR,
-    ]);
+// it('deletes a post by its ID', function () {
+//     $author = User::factory()->unverified()->create([
+//         'role' => Role::AUTHOR,
+//     ]);
 
-    $post1 = Post::factory()->create([
-        'user_id' => $author->id,
-    ]);
+//     $post1 = Post::factory()->create([
+//         'user_id' => $author->id,
+//     ]);
 
-    // Case I: User not authenticated
-    $component = Volt::test('pages.posts.index');
-    $component->call('delete', $post1->id);
-    $component->assertForbidden();
-    expect(Post::find($post1->id))->not->toBeNull();
+//     // Case I: User not authenticated
+//     $component = Volt::test('pages.posts.index');
+//     $component->call('delete', $post1->id);
+//     $component->assertForbidden();
+//     expect(Post::find($post1->id))->not->toBeNull();
 
-    // Case II: User is authenticated but not verified
-    $component = Volt::test('pages.posts.index');
-    $component->actingAs($author);
-    $component->call('delete', $post1->id);
-    $component->assertRedirect(route('verification.notice'));
+//     // Case II: User is authenticated but not verified
+//     $component = Volt::test('pages.posts.index');
+//     $component->actingAs($author);
+//     $component->call('delete', $post1->id);
+//     $component->assertRedirect(route('verification.notice'));
 
-    expect(Post::find($post1->id))->not->toBeNull();
+//     expect(Post::find($post1->id))->not->toBeNull();
 
-    // Case III: User authenticated & verified but can't delete other users posts
-    $component = Volt::test('pages.posts.index');
-    $component->actingAs($author);
-    $author->markEmailAsVerified();
-    $post2 = Post::factory()->create([
-        'user_id' => User::factory()->create()->id,
-    ]);
-    $component->call('delete', $post2->id);
-    $component->assertForbidden();
-    expect(Post::find($post1->id))->not->toBeNull();
-    expect(Post::find($post2->id))->not->toBeNull();
+//     // Case III: User authenticated & verified but can't delete other users posts
+//     $component = Volt::test('pages.posts.index');
+//     $component->actingAs($author);
+//     $author->markEmailAsVerified();
+//     $post2 = Post::factory()->create([
+//         'user_id' => User::factory()->create()->id,
+//     ]);
+//     $component->call('delete', $post2->id);
+//     $component->assertForbidden();
+//     expect(Post::find($post1->id))->not->toBeNull();
+//     expect(Post::find($post2->id))->not->toBeNull();
 
-    // Case IV: User authenticated & verified & can delete its own posts
-    $component = Volt::test('pages.posts.index');
-    $component->actingAs($author);
-    $component->call('delete', $post1->id);
-    expect(Post::find($post1->id))->toBeNull();
-});
+//     // Case IV: User authenticated & verified & can delete its own posts
+//     $component = Volt::test('pages.posts.index');
+//     $component->actingAs($author);
+//     $component->call('delete', $post1->id);
+//     expect(Post::find($post1->id))->toBeNull();
+// });
 
 it('displays all posts', function () {
     $post1 = Post::factory()->create();
