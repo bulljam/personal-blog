@@ -7,6 +7,7 @@ state([
     'name' => '',
     'email' => '',
     'password' => '',
+    'password_confirmation' => '',
     'role' => '',
 ]);
 
@@ -15,12 +16,12 @@ $messages = computed(
         'name' => 'Name',
         'email' => 'Email',
         'role' => 'Role',
-        'password' => 'Password',
     ]
 );
 rules([
     'name' => 'required|string|max:255',
     'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+    'password' => 'required|confirmed|min:8|max:255',
 ]);
 
 mount(function () {
@@ -42,6 +43,24 @@ $update = action(function ($field) {
     } else {
         session()->flash('info', 'No changes detected.');
     }
+});
+
+$updatePassword = action(function () {
+    $this->validateOnly('password');
+
+    if (password_verify($this->password, $this->user->password)) {
+        $this->addError('password', 'The new password must be different from your current password.');
+        return;
+    }
+
+    $this->user->password = \Illuminate\Support\Facades\Hash::make($this->password);
+    $this->user->save();
+    $this->user->refresh();
+
+    $this->reset(['password', 'password_confirmation']);
+
+    session()->flash('success', 'Password updated successfully.');
+    return redirect()->route('dashboard.edit');
 });
 
 layout('components.layouts.dashboard');
@@ -130,10 +149,8 @@ layout('components.layouts.dashboard');
                         ••••••••••••
                     </p>
                 </div>
-                <button
-                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <x-heroicon-o-pencil class="w-4 h-4" />
-                </button>
+                <x-partials.password-form :password="$this->password"
+                    :password_confirmation="$this->password_confirmation" updatePassword="updatePassword" />
             </div>
 
             <!-- Role -->
