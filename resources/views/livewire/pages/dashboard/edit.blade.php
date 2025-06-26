@@ -15,24 +15,25 @@ $messages = computed(
     fn() => [
         'name' => 'Name',
         'email' => 'Email',
-        'role' => 'Role',
     ]
 );
 rules([
     'name' => 'required|string|max:255',
     'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
     'password' => 'required|confirmed|min:8|max:255',
+    'role' => 'required|in:' . \App\Enums\Role::AUTHOR->value . ',' . \App\Enums\Role::READER->value,
 ]);
 
 mount(function () {
     $this->user = auth()->user();
     $this->name = $this->user->name;
     $this->email = $this->user->email;
-    $this->role = $this->user->role;
+    $this->role = $this->user->role->value;
 });
 
 $update = action(function ($field) {
     $this->validateOnly($field);
+
     if ($this->user->$field !== $this->$field) {
         $this->user->$field = $this->$field;
         $this->user->save();
@@ -60,6 +61,28 @@ $updatePassword = action(function () {
     $this->reset(['password', 'password_confirmation']);
 
     session()->flash('success', 'Password updated successfully.');
+    return redirect()->route('dashboard.edit');
+});
+
+$updateRole = action(function ($value, $delete = false) {
+    $this->validateOnly('role');
+
+    $this->role = $value;
+
+    if ($this->user->role->value === $this->role) {
+        $this->addError('role', 'The new role must be different from your current role.');
+        return;
+    }
+
+    $this->user->role = $this->role;
+    $this->user->save();
+    $this->user->refresh();
+
+    if ($delete === true) {
+        $this->user->posts()->delete();
+    }
+
+    session()->flash('success', 'Role updated successfully.');
     return redirect()->route('dashboard.edit');
 });
 
@@ -164,14 +187,11 @@ layout('components.layouts.dashboard');
                     <div class="flex items-center gap-2">
                         <span
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
-                            {{ $this->role->getLabel() }}
+                            {{ $this->user->role->getLabel() }}
                         </span>
                     </div>
                 </div>
-                <button
-                    class="ml-4 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <x-heroicon-o-pencil class="w-4 h-4" />
-                </button>
+                <x-partials.role-form :role="$this->role" updateRole="updateRole" />
             </div>
         </div>
     </div>
