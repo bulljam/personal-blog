@@ -12,6 +12,14 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        Post::factory()->count(10)->create();
+        // Post::factory()->count(10)->create();
+        Post::factory()->count(1)->create([
+            'title' => 'old',
+            'published_at' => now()->subDays(3)
+        ]);
+        Post::factory()->count(1)->create([
+            'title' => 'future',
+            'published_at' => now()->addDays(3)
+        ]);
     }
 }
