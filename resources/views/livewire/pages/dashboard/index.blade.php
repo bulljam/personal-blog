@@ -1,12 +1,20 @@
 @volt
 <?php
 
-use function Livewire\Volt\{computed, layout, action, uses};
+use function Livewire\Volt\{state, computed, layout, action, uses};
 uses(\Livewire\WithPagination::class);
+
+state([
+    'search' => '',
+    'sortBy' => 'published_at',
+    'direction' => 'desc',
+    'dateFilter' => '',
+]);
 
 $posts = computed(fn() => \App\Models\Post::publishedPosts()
     ->author(auth()->id())
-    ->latest('published_at')
+    ->search($this->search)
+    ->orderBy($this->sortBy, $this->direction)
     ->paginate(5));
 
 $delete = action(function ($postId) {
@@ -25,6 +33,12 @@ $delete = action(function ($postId) {
     $post->delete();
 
     session()->flash('success', 'Post deleted successfully');
+});
+
+$sort = action(function ($sortBy, $direction) {
+    $this->sortBy = $sortBy;
+    $this->direction = $direction;
+    $this->resetPage();
 });
 
 layout('components.layouts.dashboard');
