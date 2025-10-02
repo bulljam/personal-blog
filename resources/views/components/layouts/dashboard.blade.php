@@ -124,10 +124,15 @@
                         <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {{ auth()->user()->name }}
                         </p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
                             {{ auth()->user()->email }}
                         </p>
                     </div>
+                    <a wire:navigate href="{{ route('dashboard.edit') }}"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
+                        aria-label="Edit profile">
+                        <x-heroicon-o-pencil class="w-4 h-4" />
+                    </a>
                 </div>
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
