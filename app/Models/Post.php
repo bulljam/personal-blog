@@ -53,8 +53,7 @@ class Post extends Model
     public function scopePublishedPosts($query)
     {
         return $query
-            ->whereNotNull('published_at')
-            ->orderByDesc('published_at');
+            ->whereNotNull('published_at');
     }
 
     public function scopeSearch($query, $value)
