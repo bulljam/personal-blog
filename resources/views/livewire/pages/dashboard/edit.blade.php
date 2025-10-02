@@ -142,7 +142,7 @@ layout('components.layouts.dashboard');
                         {{ $this->name }}
                     </p>
                 </div>
-                <x-partials.name-form :name="$this->name" update="update" />
+                <x-partials.name-form :name="$this->name"  />
             </div>
 
             <!-- Email -->
@@ -157,7 +157,7 @@ layout('components.layouts.dashboard');
                         {{ $this->email }}
                     </p>
                 </div>
-                <x-partials.email-form :name="$this->name" update="update" />
+                <x-partials.email-form :name="$this->name"  />
             </div>
 
             <!-- Password -->
@@ -173,7 +173,7 @@ layout('components.layouts.dashboard');
                     </p>
                 </div>
                 <x-partials.password-form :password="$this->password"
-                    :password_confirmation="$this->password_confirmation" updatePassword="updatePassword" />
+                    :password_confirmation="$this->password_confirmation"  />
             </div>
 
             <!-- Role -->
@@ -191,7 +191,7 @@ layout('components.layouts.dashboard');
                         </span>
                     </div>
                 </div>
-                <x-partials.role-form :role="$this->role" updateRole="updateRole" />
+                <x-partials.role-form :role="$this->role" />
             </div>
         </div>
     </div>
