@@ -1,4 +1,4 @@
-@props(['password' => '', 'password_confirmation' => '', 'updatePassword' => null])
+@props(['password' => '', 'password_confirmation' => ''])
 
 <div x-data="{ open: false }" @close-modal.window="open = false">
     <!-- Edit Button -->
