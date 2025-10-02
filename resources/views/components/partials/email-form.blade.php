@@ -1,4 +1,4 @@
-@props(['name' => '', 'update' => null])
+@props(['name' => ''])
 
 <div x-data="{ open: false }" @close-modal.window="open = false">
     <!-- Edit Button -->
