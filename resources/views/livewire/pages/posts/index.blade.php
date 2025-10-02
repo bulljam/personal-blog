@@ -17,6 +17,7 @@ $posts = computed(function () {
         ->search($this->search)
         ->author($this->author)
         ->date($this->dateFilter)
+        ->latest('published_at')
         ->paginate(5);
 });
 
@@ -107,24 +108,24 @@ layout('components.layouts.blog');
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
                         <div x-data="{
-                                                    showScrollIndicator: false,
-                                                    init() {
-                                                        this.$nextTick(() => {
-                                                            this.checkScroll();
-                                                            this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
-                                                        });
-                                                        this.$watch('$wire.visible', (value) => {
-                                                            if (value) {
-                                                                this.$nextTick(() => this.checkScroll());
-                                                            }
-                                                        });
-                                                    },
-                                                    checkScroll() {
-                                                        const el = this.$refs.dropdown;
-                                                        if (!el) return;
-                                                        this.showScrollIndicator = el.scrollHeight > el.clientHeight;
-                                                    }
-                                                }" class="absolute z-10 mt-1 w-full">
+                                                        showScrollIndicator: false,
+                                                        init() {
+                                                            this.$nextTick(() => {
+                                                                this.checkScroll();
+                                                                this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                            });
+                                                            this.$watch('$wire.visible', (value) => {
+                                                                if (value) {
+                                                                    this.$nextTick(() => this.checkScroll());
+                                                                }
+                                                            });
+                                                        },
+                                                        checkScroll() {
+                                                            const el = this.$refs.dropdown;
+                                                            if (!el) return;
+                                                            this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                                        }
+                                                    }" class="absolute z-10 mt-1 w-full">
                             <!-- Dropdown Container -->
                             <div
                                 class="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
