@@ -1,23 +1,66 @@
 @props(['posts' => []])
 
+<div class="p-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+    <div class="relative max-w-md">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <x-heroicon-o-magnifying-glass class="h-5 w-5 text-gray-400 dark:text-gray-500" />
+        </div>
+        <input type="search" wire:model.live.debounce.300ms="search" name="search" autocomplete="off"
+            placeholder="Search posts..."
+            class="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors border-gray-300 dark:border-gray-700" />
+    </div>
+</div>
+
 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
     <thead class="bg-gray-50 dark:bg-gray-800">
         <tr>
             <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Title
+                <div class="flex items-center gap-2">
+                    <span>Title</span>
+                    <div class="flex flex-col gap-0.5">
+                        <button wire:click="sort('title', 'asc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-up class="w-3 h-3" />
+                        </button>
+                        <button wire:click="sort('title', 'desc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-down class="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
             </th>
-            {{-- <th scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Excerpt
-            </th> --}}
             <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Published
+                <div class="flex items-center gap-2">
+                    <span>Published</span>
+                    <div class="flex flex-col gap-0.5">
+                        <button wire:click="sort('published_at', 'asc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-up class="w-3 h-3" />
+                        </button>
+                        <button wire:click="sort('published_at', 'desc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-down class="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
             </th>
             <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Last Updated
+                <div class="flex items-center gap-2">
+                    <span>Last Updated</span>
+                    <div class="flex flex-col gap-0.5">
+                        <button wire:click="sort('updated_at', 'asc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-up class="w-3 h-3" />
+                        </button>
+                        <button wire:click="sort('updated_at', 'desc')"
+                            class="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <x-heroicon-o-chevron-down class="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
             </th>
             <th scope="col"
                 class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -38,17 +81,6 @@
                         </div>
                     </div>
                 </td>
-                {{-- <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900 dark:text-gray-100">
-                        @if($post->excerpt)
-                            <span>
-                                {{ Str::limit($post->excerpt, 40) }}
-                            </span>
-                        @else
-                            <span class="text-gray-400 dark:text-gray-500">—</span>
-                        @endif
-                    </div>
-                </td> --}}
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900 dark:text-gray-100">
                         <time datetime="{{ $post->published_at->toIso8601String() }}">
