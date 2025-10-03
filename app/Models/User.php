@@ -95,8 +95,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $query = $query->authorsWithPosts();
         if ($name) {
-          $query->where('name', 'like', "%{$name}%");
+            $query->where('name', 'like', "%{$name}%");
         }
         return $query;
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }
