@@ -91,4 +91,45 @@ class Post extends Model
             default => $query,
         };
     }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function isLikedBy($user_id)
+    {
+        return $this->likes()->where('user_id', $user_id)->where('type', 'like')->exists();
+    }
+    public function isDislikedBy($user_id)
+    {
+        return $this->likes()->where('user_id', $user_id)->where('type', 'dislike')->exists();
+    }
+    public function likesCount()
+    {
+        return $this->likes()->where('type', 'like')->count();
+    }
+    public function dislikesCount()
+    {
+        return $this->likes()->where('type', 'dislike')->count();
+    }
+
+    public function UserReactionType($user_id)
+    {
+        $like = $this->likes()->where('user_id', $user_id)->first();
+        if (!$like) {
+            return;
+        }
+        return $like->type;
+    }
+
+    public function hasUserLiked($user_id)
+    {
+        return $this->UserReactionType($user_id) === 'like';
+    }
+
+    public function hasUserDisliked($user_id)
+    {
+        return $this->UserReactionType($user_id) === 'dislike';
+    }
 }
