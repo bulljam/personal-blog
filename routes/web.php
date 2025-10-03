@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return redirect()->route('posts.index');
+    return redirect()->route('dashboard.index');
 })->name('home');
 
 Route::prefix('posts')->as('posts.')->middleware(['auth', 'verified'])->group(function () {
