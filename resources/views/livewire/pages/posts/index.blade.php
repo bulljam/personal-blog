@@ -10,6 +10,7 @@ state([
     'dateFilter' => '',
     'authorSearch' => '',
     'visible' => false,
+    'reactionKey' => 0,
 ]);
 
 $posts = computed(function () {
@@ -29,6 +30,31 @@ $clearFilters = action(function () {
     $this->resetPage();
 });
 
+$toggleReaction = action(function ($post_id, $type) {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    $existingLike = \App\Models\Like::findUnique($post_id, auth()->id())->first();
+
+    if ($existingLike) {
+        if ($existingLike->type === $type) {
+            $existingLike->delete();
+        } else {
+            $existingLike->type = $type;
+            $existingLike->save();
+        }
+    } else {
+        \App\Models\Like::create([
+            'user_id' => auth()->id(),
+            'post_id' => $post_id,
+            'type' => $type,
+        ]);
+    }
+
+    $this->reactionKey;
+});
+
 layout('components.layouts.blog');
 ?>
 
@@ -38,31 +64,7 @@ layout('components.layouts.blog');
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">All Posts</h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Discover the latest articles and stories</p>
         </div>
-        @author
-        <a wire:navigate href="{{ route('posts.create') }}"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
-            <x-heroicon-o-plus class="w-4 h-4" />
-            <span>Create Post</span>
-        </a>
-        @endauthor
     </div>
-    @if (session('success'))
-        <div
-            class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-check-circle class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
-            <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div
-            class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
-            <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
-        </div>
-    @endif
-
-
     <!-- Modern Filter Bar -->
     <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -108,24 +110,24 @@ layout('components.layouts.blog');
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
                         <div x-data="{
-                                                        showScrollIndicator: false,
-                                                        init() {
-                                                            this.$nextTick(() => {
-                                                                this.checkScroll();
-                                                                this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
-                                                            });
-                                                            this.$watch('$wire.visible', (value) => {
-                                                                if (value) {
-                                                                    this.$nextTick(() => this.checkScroll());
-                                                                }
-                                                            });
-                                                        },
-                                                        checkScroll() {
-                                                            const el = this.$refs.dropdown;
-                                                            if (!el) return;
-                                                            this.showScrollIndicator = el.scrollHeight > el.clientHeight;
-                                                        }
-                                                    }" class="absolute z-10 mt-1 w-full">
+                                                            showScrollIndicator: false,
+                                                            init() {
+                                                                this.$nextTick(() => {
+                                                                    this.checkScroll();
+                                                                    this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                                });
+                                                                this.$watch('$wire.visible', (value) => {
+                                                                    if (value) {
+                                                                        this.$nextTick(() => this.checkScroll());
+                                                                    }
+                                                                });
+                                                            },
+                                                            checkScroll() {
+                                                                const el = this.$refs.dropdown;
+                                                                if (!el) return;
+                                                                this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                                            }
+                                                                        }" class="absolute z-10 mt-1 w-full">
                             <!-- Dropdown Container -->
                             <div
                                 class="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
@@ -233,6 +235,60 @@ layout('components.layouts.blog');
                             @endif
                         </div>
                     </div>
+                    <div class="flex items-center gap-3">
+                        @auth
+                            <button wire:click="toggleReaction({{ $post->id }}, 'like')" wire:loading.attr="disabled" @class([
+                                'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                                'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30' => $post->isLikedBy(auth()->id()),
+                                'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700' => !$post->isLikedBy(auth()->id()),
+                            ])>
+                                <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
+                                <span wire:loading.remove wire:target="toggleReaction({{ $post->id }},'like')">
+                                    {{ $post->likesCount() }}
+                                </span>
+                                <svg wire:loading wire:target="toggleReaction({{ $post->id }},'like')"
+                                    class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                    </circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </button>
+
+                            <button wire:click="toggleReaction({{ $post->id }}, 'dislike')" wire:loading.attr="disabled" @class([
+                                'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                                'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30' => $post->isDislikedBy(auth()->id()),
+                                'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700' => !$post->isDislikedBy(auth()->id()),
+                            ])>
+                                <x-heroicon-o-hand-thumb-down class="w-4 h-4" />
+                                <span wire:loading.remove wire:target="toggleReaction({{ $post->id }}, 'dislike')">
+                                    {{ $post->dislikesCount() }}
+                                </span>
+                                <svg wire:loading wire:target="toggleReaction({{ $post->id }}, 'dislike')"
+                                    class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                    </circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </button>
+                        @else
+                            <div
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <x-heroicon-o-hand-thumb-up class="w-4 h-4" />
+                                <span>{{ $post->likesCount() }}</span>
+                            </div>
+                            <div
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <x-heroicon-o-hand-thumb-down class="w-4 h-4" />
+                                <span>{{ $post->dislikesCount() }}</span>
+                            </div>
+                        @endauth
+                    </div>
                 </div>
                 <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
                     <a wire:navigate href="{{ route('posts.show', $post->slug) }}"
@@ -240,20 +296,6 @@ layout('components.layouts.blog');
                         Read more
                         <x-heroicon-o-arrow-right class="w-4 h-4" />
                     </a>
-                    @can('update', $post)
-                        <a wire:navigate href="{{ route('posts.edit', $post->slug) }}"
-                            class="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors">
-                            <x-heroicon-o-pencil class="w-4 h-4" />
-                            <span>Edit</span>
-                        </a>
-                    @endcan
-                    @can('delete', $post)
-                        <button wire:click="delete({{ $post->id }})" wire:confirm="Are you sure you want to delete this post?"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors">
-                            <x-heroicon-o-trash class="w-4 h-4" />
-                            <span>Delete</span>
-                        </button>
-                    @endcan
                 </div>
             </article>
         @empty
