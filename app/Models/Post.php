@@ -97,6 +97,11 @@ class Post extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function isLikedBy($user_id)
     {
         return $this->likes()->where('user_id', $user_id)->where('type', 'like')->exists();
@@ -112,6 +117,11 @@ class Post extends Model
     public function dislikesCount()
     {
         return $this->likes()->where('type', 'dislike')->count();
+    }
+
+    public function commentsCount(): int
+    {
+        return $this->comments()->count();
     }
 
     public function UserReactionType($user_id)
