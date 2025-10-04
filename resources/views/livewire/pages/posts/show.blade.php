@@ -1,15 +1,22 @@
 @volt
 <?php
 
-use function Livewire\Volt\{mount, state, action, layout};
+use function Livewire\Volt\{mount, rules, state, action, layout};
 
 $post = state([
     'post' => null,
+    'commentContent' => '',
+    'comment' => null,
+    'updating' => false,
 ]);
 
 mount(function (\App\Models\Post $post) {
     $this->post = $post;
 });
+
+rules([
+    'commentContent' => 'required|max:255',
+]);
 
 $delete = action(function () {
     $this->authorize('delete', $this->post);
@@ -39,6 +46,54 @@ $toggleReaction = action(function ($type) {
         ]);
     }
 
+    $this->post->refresh();
+});
+
+$addComment = action(function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    $this->validate();
+
+    \App\Models\Comment::create([
+        'user_id' => auth()->id(),
+        'post_id' => $this->post->id,
+        'content' => $this->commentContent,
+    ]);
+
+    $this->reset('commentContent');
+    $this->post->refresh();
+
+});
+
+$editComment = action(function ($comment_id) {
+    $this->comment = \App\Models\Comment::findOrFail($comment_id);
+    $this->commentContent = $this->comment->content;
+    $this->updating = true;
+});
+$updateComment = action(function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    if (!$this->comment) {
+        return;
+    }
+    $this->validate();
+
+    $this->comment->update([
+        'content' => $this->commentContent,
+    ]);
+
+    $this->reset(['updating', 'comment', 'commentContent']);
+    $this->post->refresh();
+});
+
+$deleteComment = action(function ($comment_id) {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    $comment = \App\Models\Comment::findOrFail($comment_id);
+    $comment->delete();
     $this->post->refresh();
 });
 layout('components.layouts.dashboard');
@@ -177,6 +232,7 @@ layout('components.layouts.dashboard');
                 </div>
             </div>
         </div>
+        <x-partials.comments-section :post="$this->post" :updating="$this->updating" />
     </article>
 </div>
 @endvolt
