@@ -55,10 +55,10 @@ layout('components.layouts.dashboard');
 <div class="max-w-3xl mx-auto">
     <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-            <a href="{{ route('dashboard.index') }}" wire:navigate
+            <button type="button" @click="history.back()"
                 class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                 <x-heroicon-o-arrow-left class="w-5 h-5" />
-            </a>
+            </button>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Create New Post</h1>
         </div>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Share your thoughts and ideas with the world</p>
@@ -76,8 +76,7 @@ layout('components.layouts.dashboard');
                 <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Title <span class="text-red-500">*</span>
                 </label>
-                <input type="text" id="title" wire:model="title"
-                    autocomplete="off"
+                <input type="text" id="title" wire:model="title" autocomplete="off"
                     class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @class(['border-gray-300 dark:border-gray-700' => !$errors->has('title'), 'border-red-500 dark:border-red-500' => $errors->has('title')])"
                     placeholder="Enter post title" />
                 @error('title')
@@ -94,8 +93,7 @@ layout('components.layouts.dashboard');
                     <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional, max 500
                         characters)</span>
                 </label>
-                <textarea id="excerpt" wire:model="excerpt" rows="3"
-                    autocomplete="off"
+                <textarea id="excerpt" wire:model="excerpt" rows="3" autocomplete="off"
                     class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none @class(['border-gray-300 dark:border-gray-700' => !$errors->has('excerpt'), 'border-red-500 dark:border-red-500' => $errors->has('excerpt')])"
                     placeholder="A brief summary of your post..."></textarea>
                 @if($excerpt)
@@ -115,8 +113,7 @@ layout('components.layouts.dashboard');
                 <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Content <span class="text-red-500">*</span>
                 </label>
-                <textarea id="content" wire:model="content" rows="12"
-                    autocomplete="off"
+                <textarea id="content" wire:model="content" rows="12" autocomplete="off"
                     class="block w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none font-mono text-sm @class(['border-gray-300 dark:border-gray-700' => !$errors->has('content'), 'border-red-500 dark:border-red-500' => $errors->has('content')])"
                     placeholder="Write your post content here..."></textarea>
                 @error('content')
