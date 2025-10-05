@@ -6,16 +6,20 @@ use function Livewire\Volt\{mount, rules, state, action, layout};
 $post = state([
     'post' => null,
     'commentContent' => '',
+    'subCommentContent' => '',
     'comment' => null,
-    'updating' => false,
+    'updating_commentContent' => false,
+    'updating_subCommentContent' => false,
+    'replyingTo' => null,
 ]);
 
 mount(function (\App\Models\Post $post) {
-    $this->post = $post;
+    $this->post = $post->load('comments.replies.user');
 });
 
 rules([
     'commentContent' => 'required|max:255',
+    'subCommentContent' => 'required|max:255',
 ]);
 
 $delete = action(function () {
@@ -49,29 +53,30 @@ $toggleReaction = action(function ($type) {
     $this->post->refresh();
 });
 
-$addComment = action(function () {
+$addComment = action(function ($value = 'commentContent') {
     if (!auth()->check()) {
         return redirect()->route('login');
     }
-    $this->validate();
+    $this->validateOnly($value);
 
     \App\Models\Comment::create([
         'user_id' => auth()->id(),
         'post_id' => $this->post->id,
-        'content' => $this->commentContent,
+        'parent_id' => $this->replyingTo,
+        'content' => $this->$value,
     ]);
 
-    $this->reset('commentContent');
+    $this->reset(['updating_c', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
     $this->post->refresh();
 
 });
 
-$editComment = action(function ($comment_id) {
+$editComment = action(function ($comment_id, $value = 'commentContent') {
     $this->comment = \App\Models\Comment::findOrFail($comment_id);
-    $this->commentContent = $this->comment->content;
-    $this->updating = true;
+    $this->$value = $this->comment->content;
+    $this->updating_.$value = true;
 });
-$updateComment = action(function () {
+$updateComment = action(function ($value = 'commentContent') {
     if (!auth()->check()) {
         return redirect()->route('login');
     }
@@ -81,10 +86,10 @@ $updateComment = action(function () {
     $this->validate();
 
     $this->comment->update([
-        'content' => $this->commentContent,
+        'content' => $this->$value,
     ]);
 
-    $this->reset(['updating', 'comment', 'commentContent']);
+    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
     $this->post->refresh();
 });
 
@@ -94,19 +99,31 @@ $deleteComment = action(function ($comment_id) {
     }
     $comment = \App\Models\Comment::findOrFail($comment_id);
     $comment->delete();
+
+    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
     $this->post->refresh();
 });
+
+$startReply = action(function ($comment_id) {
+    $this->replyingTo = $comment_id;
+});
+
+$cancelReply = action(function () {
+    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
+});
+
+
 layout('components.layouts.dashboard');
 ?>
 
 
 <div class="space-y-8">
     <div>
-        <a href="{{ route('dashboard.index') }}" wire:navigate
+        <button type="button" @click="history.back()"
             class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
             <x-heroicon-o-arrow-left class="w-4 h-4" />
-            <span>Back to Posts</span>
-        </a>
+            <span>Back</span>
+        </button>
     </div>
 
     @if (session('success'))
@@ -232,7 +249,7 @@ layout('components.layouts.dashboard');
                 </div>
             </div>
         </div>
-        <x-partials.comments-section :post="$this->post" :updating="$this->updating" />
+        <x-partials.comments-section :post="$this->post" :updating="$this->updating" :replyingTo="$this->replyingTo" />
     </article>
 </div>
 @endvolt
