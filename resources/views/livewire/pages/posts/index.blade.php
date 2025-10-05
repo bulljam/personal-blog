@@ -110,24 +110,24 @@ layout('components.layouts.blog');
                     <!-- Dropdown results -->
                     @if($this->authorSearch && $this->visible)
                         <div x-data="{
-                                                            showScrollIndicator: false,
-                                                            init() {
-                                                                this.$nextTick(() => {
-                                                                    this.checkScroll();
-                                                                    this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
-                                                                });
-                                                                this.$watch('$wire.visible', (value) => {
-                                                                    if (value) {
-                                                                        this.$nextTick(() => this.checkScroll());
-                                                                    }
-                                                                });
-                                                            },
-                                                            checkScroll() {
-                                                                const el = this.$refs.dropdown;
-                                                                if (!el) return;
-                                                                this.showScrollIndicator = el.scrollHeight > el.clientHeight;
-                                                            }
-                                                                        }" class="absolute z-10 mt-1 w-full">
+                                            showScrollIndicator: false,
+                                            init() {
+                                                this.$nextTick(() => {
+                                                    this.checkScroll();
+                                                    this.$refs.dropdown.addEventListener('scroll', () => this.checkScroll());
+                                                });
+                                                this.$watch('$wire.visible', (value) => {
+                                                    if (value) {
+                                                        this.$nextTick(() => this.checkScroll());
+                                                    }
+                                                });
+                                            },
+                                            checkScroll() {
+                                                const el = this.$refs.dropdown;
+                                                if (!el) return;
+                                                this.showScrollIndicator = el.scrollHeight > el.clientHeight;
+                                            }
+                                                        }" class="absolute z-10 mt-1 w-full">
                             <!-- Dropdown Container -->
                             <div
                                 class="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
@@ -235,6 +235,11 @@ layout('components.layouts.blog');
                             @endif
                         </div>
                     </div>
+                    <a wire:navigate href="{{ route('posts.show', $post->slug) }}"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <x-heroicon-o-chat-bubble-left-right class="w-4 h-4" />
+                        <span>{{ $post->commentsCount() }}</span>
+                    </a>
                     <div class="flex items-center gap-3">
                         @auth
                             <button wire:click="toggleReaction({{ $post->id }}, 'like')" wire:loading.attr="disabled" @class([
