@@ -6,10 +6,9 @@ use function Livewire\Volt\{mount, rules, state, action, layout};
 $post = state([
     'post' => null,
     'commentContent' => '',
-    'subCommentContent' => '',
+    'replyContent' => '',
     'comment' => null,
-    'updating_commentContent' => false,
-    'updating_subCommentContent' => false,
+    'editingCommentId' => null,
     'replyingTo' => null,
 ]);
 
@@ -19,7 +18,7 @@ mount(function (\App\Models\Post $post) {
 
 rules([
     'commentContent' => 'required|max:255',
-    'subCommentContent' => 'required|max:255',
+    'replyContent' => 'required|max:255',
 ]);
 
 $delete = action(function () {
@@ -66,15 +65,21 @@ $addComment = action(function ($value = 'commentContent') {
         'content' => $this->$value,
     ]);
 
-    $this->reset(['updating_c', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
+    $this->reset(['comment', 'commentContent', 'replyContent', 'replyingTo', 'editingCommentId']);
     $this->post->refresh();
-
 });
 
 $editComment = action(function ($comment_id, $value = 'commentContent') {
     $this->comment = \App\Models\Comment::findOrFail($comment_id);
-    $this->$value = $this->comment->content;
-    $this->updating_.$value = true;
+    $this->editingCommentId = $comment_id;
+
+    if ($value === 'commentContent') {
+        $this->commentContent = $this->comment->content;
+        $this->reset(['replyContent', 'replyingTo']);
+    } else {
+        $this->replyContent = $this->comment->content;
+        $this->reset(['commentContent', 'replyingTo']);
+    }
 });
 $updateComment = action(function ($value = 'commentContent') {
     if (!auth()->check()) {
@@ -83,13 +88,13 @@ $updateComment = action(function ($value = 'commentContent') {
     if (!$this->comment) {
         return;
     }
-    $this->validate();
-
+    $this->validateOnly($value);
+    
     $this->comment->update([
         'content' => $this->$value,
     ]);
 
-    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
+    $this->reset(['editingCommentId', 'comment', 'commentContent', 'replyContent', 'replyingTo']);
     $this->post->refresh();
 });
 
@@ -100,16 +105,17 @@ $deleteComment = action(function ($comment_id) {
     $comment = \App\Models\Comment::findOrFail($comment_id);
     $comment->delete();
 
-    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
+    $this->reset(['editingCommentId', 'comment', 'commentContent', 'replyContent', 'replyingTo']);
     $this->post->refresh();
 });
 
 $startReply = action(function ($comment_id) {
     $this->replyingTo = $comment_id;
+    $this->reset(['editingCommentId', 'comment', 'commentContent', 'replyContent']);
 });
 
 $cancelReply = action(function () {
-    $this->reset(['updating', 'comment', 'commentContent', 'subCommentContent', 'replyingTo']);
+    $this->reset(['editingCommentId', 'comment', 'commentContent', 'replyContent', 'replyingTo']);
 });
 
 
@@ -249,7 +255,8 @@ layout('components.layouts.dashboard');
                 </div>
             </div>
         </div>
-        <x-partials.comments-section :post="$this->post" :updating="$this->updating" :replyingTo="$this->replyingTo" />
+        <x-partials.comments-section :post="$this->post" :editingCommentId="$this->editingCommentId"
+            :replyingTo="$this->replyingTo" />
     </article>
 </div>
 @endvolt
