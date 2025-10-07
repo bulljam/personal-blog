@@ -1,6 +1,6 @@
 @props([
-    'comment', 
-    'depth' => 0, 
+    'comment',
+    'depth' => 0,
     'editingCommentId' => null,
     'replyingTo' => null
 ])
@@ -11,7 +11,7 @@ $isMaxDepth = $depth >= $maxDepth;
 @endphp
 
 <div
-    class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 {{ $depth > 0 ? 'ml-8 mt-4 border-l-2 border-gray-300 dark:border-gray-700 pl-4' : '' }}">
+    class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 {{ $depth > 0 ? 'ml-8 mt-4 border-l-2 border-gray-300 dark:border-gray-700' : '' }}">
     <div class="flex items-start gap-3">
         <div
             class="w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
@@ -26,7 +26,7 @@ $isMaxDepth = $depth >= $maxDepth;
                     {{ $comment->created_at->diffForHumans() }}
                 </span>
             </div>
-            <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap mb-2">
+            <p class="text-sm text-gray-700 dark:text-gray-300  mb-2 p-2">
                 {{ $comment->content }}
             </p>
 
