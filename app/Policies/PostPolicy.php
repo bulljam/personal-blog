@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\Post;
 use App\Models\User;
 
@@ -62,5 +63,18 @@ class PostPolicy
     public function forceDelete(User $user, Post $post): bool
     {
         return false;
+    }
+
+    /**
+     * Determine whether the user can add the model to favourites.
+     */
+    public function addToFavourites(User $user): bool
+    {
+        return $user->isReader();
+    }
+
+    public function removeFromFavourites(User $user, Post $post): bool
+    {
+        return $user->isReader() && $user->hasInFavourites($post->id);
     }
 }
