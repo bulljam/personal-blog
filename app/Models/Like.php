@@ -50,4 +50,18 @@ class Like extends Model
         }
         return $query->findByPost($post_id)->findByUser($user_id);
     }
+
+    public static function totalLikes($user_id): int
+    {
+        return static::where('type', 'like')->whereHas('post', function ($q) use ($user_id) {
+            $q->where('user_id', $user_id);
+        })->count();
+    }
+
+    public static function totalDislikes($user_id): int
+    {
+        return static::where('type', 'dislike')->whereHas('post', function ($q) use ($user_id) {
+            $q->where('user_id', $user_id);
+        })->count();
+    }
 }
