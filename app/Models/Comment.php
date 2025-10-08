@@ -40,4 +40,11 @@ class Comment extends Model
     {
         return $this->parent_id !== null;
     }
+
+    public static function totalComments($user_id)
+    {
+        return static::whereHas('post', function ($q) use ($user_id) {
+            $q->where('user_id', $user_id);
+        })->count();
+    }
 }
