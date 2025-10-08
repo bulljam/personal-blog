@@ -109,4 +109,25 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class);
+    }
+
+    public function favouritePost($post_id)
+    {
+        return $this->favourites()->where('post_id', $post_id)->first();
+    }
+    public function favouritePosts()
+    {
+        // $postsIds = $this->favourites->pluck('post_id');
+        // return Post::whereIn('id', $postsIds);
+        return $this->hasManyThrough(Post::class, Favourite::class, 'user_id', 'id', 'id', 'post_id');
+    }
+
+    public function hasInFavourites($post_id)
+    {
+        return $this->favourites()->where('post_id', $post_id)->exists();
+    }
 }
