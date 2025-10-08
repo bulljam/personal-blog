@@ -142,4 +142,16 @@ class Post extends Model
     {
         return $this->UserReactionType($user_id) === 'dislike';
     }
+
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class);
+    }
+
+    public static function totalPosts($user_id)
+    {
+        return static::author($user_id)
+            ->publishedPosts()
+            ->count();
+    }
 }
