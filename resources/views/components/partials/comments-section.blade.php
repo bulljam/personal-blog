@@ -10,7 +10,7 @@
     </h2>
 
     @auth
-        @if (!$editingCommentId)
+        @if (!$editingCommentId && !$replyingTo)
             <div class="mb-8">
                 <form wire:submit="addComment" class="space-y-4">
                     <div>
