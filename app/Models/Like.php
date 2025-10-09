@@ -27,7 +27,7 @@ class Like extends Model
 
     public function scopeFindByUser($query, $user_id)
     {
-        if (!$user_id) {
+        if (! $user_id) {
             return $query;
         }
 
@@ -36,7 +36,7 @@ class Like extends Model
 
     public function scopeFindByPost($query, $post_id)
     {
-        if (!$post_id) {
+        if (! $post_id) {
             return $query;
         }
 
@@ -45,9 +45,10 @@ class Like extends Model
 
     public function scopeFindUnique($query, $post_id, $user_id)
     {
-        if (!$post_id || !$user_id) {
+        if (! $post_id || ! $user_id) {
             return $query;
         }
+
         return $query->findByPost($post_id)->findByUser($user_id);
     }
 

@@ -32,17 +32,17 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if(
             Role::AUTHOR->value,
-            fn() => auth()->check() && auth()->user()->isAuthor()
+            fn () => auth()->check() && auth()->user()->isAuthor()
         );
 
         Blade::if(
             Role::READER->value,
-            fn() => auth()->check() && auth()->user()->isReader()
+            fn () => auth()->check() && auth()->user()->isReader()
         );
 
         Blade::if(
             'session',
-            fn($key) => !empty(session($key))
+            fn ($key) => ! empty(session($key))
         );
     }
 }

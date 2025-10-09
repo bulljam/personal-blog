@@ -28,6 +28,7 @@ class Favourite extends Model
     {
         return $query->where('post_id', $post_id)->where('user_id', $user_id);
     }
+
     public static function totalFavourites($user_id)
     {
         return static::whereHas('post', function ($q) use ($user_id) {

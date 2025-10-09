@@ -26,7 +26,7 @@ class PostSeeder extends Seeder
         Post::factory()->count(1)->create([
             'title' => 'future',
             'user_id' => User::factory()->create()->id,
-            'published_at' => now()->subDays(3)
+            'published_at' => now()->subDays(3),
         ]);
     }
 }

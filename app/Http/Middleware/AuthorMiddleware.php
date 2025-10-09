@@ -17,13 +17,14 @@ class AuthorMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user()->isAuthor()) {
+        if (! $request->user()->isAuthor()) {
             // return $request->expectsJson()
             //     ? abort(403, 'You are not authorize to create a post.')
             //     : Redirect::intended(URL::route('posts.index'));
 
             abort(403, 'You are not allowed to create a post');
         }
+
         return $next($request);
     }
 }

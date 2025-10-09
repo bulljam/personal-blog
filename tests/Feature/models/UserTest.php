@@ -33,7 +33,6 @@ it('checks if user is author', function () {
     expect($reader->isAuthor())->toBeFalse();
 });
 
-
 it('has many posts', function () {
     $user = User::factory()->create([
         'role' => Role::AUTHOR,

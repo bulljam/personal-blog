@@ -38,7 +38,7 @@ class Post extends Model
         return Attribute::make(
             get: function () {
                 $published_at = $this->getAttribute('published_at');
-                if (!$published_at) {
+                if (! $published_at) {
                     return false;
                 }
 
@@ -58,7 +58,7 @@ class Post extends Model
 
     public function scopeSearch($query, $value)
     {
-        if (!$value) {
+        if (! $value) {
             return $query;
         }
 
@@ -71,15 +71,16 @@ class Post extends Model
 
     public function scopeAuthor($query, $user_id)
     {
-        if (!$user_id) {
+        if (! $user_id) {
             return $query;
         }
 
         return $query->where('user_id', $user_id);
     }
+
     public function scopeDate($query, $dateFilter)
     {
-        if (!$dateFilter) {
+        if (! $dateFilter) {
             return $query;
         }
 
@@ -106,14 +107,17 @@ class Post extends Model
     {
         return $this->likes()->where('user_id', $user_id)->where('type', 'like')->exists();
     }
+
     public function isDislikedBy($user_id)
     {
         return $this->likes()->where('user_id', $user_id)->where('type', 'dislike')->exists();
     }
+
     public function likesCount()
     {
         return $this->likes()->where('type', 'like')->count();
     }
+
     public function dislikesCount()
     {
         return $this->likes()->where('type', 'dislike')->count();
@@ -127,9 +131,10 @@ class Post extends Model
     public function UserReactionType($user_id)
     {
         $like = $this->likes()->where('user_id', $user_id)->first();
-        if (!$like) {
+        if (! $like) {
             return;
         }
+
         return $like->type;
     }
 

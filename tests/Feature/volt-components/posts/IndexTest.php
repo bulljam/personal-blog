@@ -57,7 +57,6 @@ it('filters posts when filters are set', function () {
     expect($posts->count())->toBe(2);
     expect($posts->pluck('id')->values())->toContain($post1->id, $post2->id);
 
-
     $component->set('search', '');
     $component->set('author', $author1->id);
 
@@ -105,7 +104,7 @@ it('filters authors by name when author search is set', function () {
     expect($authors->pluck('id')->values())->toContain($author1->id, $author2->id);
 
     $newAuthors = User::factory(10)->create([
-        'name' => 'John ' . fake()->lastName(),
+        'name' => 'John '.fake()->lastName(),
         'role' => Role::AUTHOR,
     ]);
 
@@ -149,7 +148,6 @@ it('clear filters', function () {
         ->set('dateFilter', 'month')
         ->set('authorSearch', 'Adam')
         ->set('visible', true);
-
 
     $posts = $component->posts;
 
@@ -240,7 +238,6 @@ it('shows create, edit, delete buttons to authors only', function () {
     $author = User::factory()->create([
         'role' => Role::AUTHOR,
     ]);
-
 
     Post::factory()->create([
         'user_id' => $author->id,

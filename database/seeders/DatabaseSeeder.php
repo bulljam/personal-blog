@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             'role' => Role::AUTHOR,
         ]);
 
-
         $this->call([
             PostSeeder::class,
         ]);

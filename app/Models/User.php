@@ -59,7 +59,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -97,6 +97,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($name) {
             $query->where('name', 'like', "%{$name}%");
         }
+
         return $query;
     }
 
@@ -119,6 +120,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->favourites()->where('post_id', $post_id)->first();
     }
+
     public function favouritePosts()
     {
         // $postsIds = $this->favourites->pluck('post_id');

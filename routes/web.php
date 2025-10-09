@@ -51,7 +51,7 @@ Route::prefix('email/verify')->middleware(['auth'])->group(function () {
 
         return redirect()->route('verification.notice')->with('status', 'Verification link was sent.');
     })->name('verification.send');
-    
+
     Route::middleware('signed')->get('/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
 
@@ -59,7 +59,6 @@ Route::prefix('email/verify')->middleware(['auth'])->group(function () {
         return redirect()->route('posts.index');
     })->name('verification.verify');
 });
-
 
 Route::prefix('dashboard')->as('dashboard.')->middleware(['auth', 'verified'])->group(function () {
     Volt::route('/', 'pages.dashboard.index')->name('index');
